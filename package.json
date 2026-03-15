@@ -7,11 +7,11 @@
     "node": ">=20.0.0"
   },
   "scripts": {
-    "build": "tsc -p packages/simulation-engine/tsconfig.json",
+    "build": "tsc -b packages/data-models/tsconfig.json packages/simulation-engine/tsconfig.json",
     "lint": "eslint .",
     "format": "prettier --check .",
     "format:write": "prettier --write .",
-    "typecheck": "tsc -p packages/simulation-engine/tsconfig.json --noEmit"
+    "typecheck": "tsc -b packages/data-models/tsconfig.json packages/simulation-engine/tsconfig.json"
   },
   "devDependencies": {
     "@eslint/js": "^9.22.0",

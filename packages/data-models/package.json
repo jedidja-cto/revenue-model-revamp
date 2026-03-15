@@ -1,13 +1,16 @@
 {
-  "name": "@revenue-model-revamp/simulation-engine",
-  "version": "0.1.0",
+  "name": "@revrem/data-models",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
   "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "dependencies": {
-    "@revrem/data-models": "workspace:*"
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
   },
+  "types": "./dist/index.d.ts",
   "files": [
     "dist"
   ],

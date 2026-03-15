@@ -1,11 +1,32 @@
+import type {
+  Business,
+  Expense,
+  Product,
+  SimulationScenario,
+} from '@revrem/data-models';
+
+export type {
+  Business,
+  Expense,
+  Product,
+  SimulationScenario,
+} from '@revrem/data-models';
+
 export interface SimulationEngineConfig {
   currency: string;
   projectionMonths: number;
   taxRate: number;
 }
 
-export interface SimulationScenario {
+export interface SimulationScenarioSummary {
   name: string;
+}
+
+export interface SimulationEngineInput {
+  business: Business;
+  products: Product[];
+  expenses: Expense[];
+  scenario: SimulationScenario;
 }
 
 export const SIMULATION_ENGINE_VERSION = '0.1.0';

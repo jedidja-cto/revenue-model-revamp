@@ -24,7 +24,13 @@ importers:
         specifier: ^8.26.1
         version: 8.57.0(eslint@9.39.4)(typescript@5.9.3)
 
-  packages/simulation-engine: {}
+  packages/data-models: {}
+
+  packages/simulation-engine:
+    dependencies:
+      '@revrem/data-models':
+        specifier: workspace:*
+        version: link:../data-models
 
 packages:
 

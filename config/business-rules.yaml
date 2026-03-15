@@ -1,0 +1,14 @@
+expense_categories:
+  - rent
+  - salaries
+  - electricity
+  - transport
+  - marketing
+  - software
+
+simulation:
+  projection_months: 12
+
+defaults:
+  currency: NAD
+  tax_rate: 0

@@ -1,9 +1,18 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync, rmSync } from 'node:fs';
+import { join } from 'node:path';
+import { tmpdir } from 'node:os';
 
 import { runSimulation } from '../../simulation-engine/dist/src/index.js';
 import { loadYamlScenario } from '../dist/loadYamlScenario.js';
-import { formatSimulationSummary, runScenarioFile } from '../dist/runScenario.js';
+import {
+  formatConsolidatedReport,
+  formatSimulationSummary,
+  runScenarioFile,
+  runScenarioFiles,
+  writeConsolidatedCsv,
+} from '../dist/runScenario.js';
 
 test('YAML loader produces a valid simulation input and config for the coffee shop', () => {
   const loaded = loadYamlScenario('scenarios/coffee-shop.yaml');
@@ -34,4 +43,60 @@ test('CLI runner can execute the SaaS scenario file', () => {
   assert.match(summary, /Depreciation:/);
   assert.match(summary, /Net Cashflow:/);
   assert.match(summary, /Cumulative Profit:/);
+});
+
+test('batch scenario runner includes a consolidated report for multiple YAML files', () => {
+  const summary = runScenarioFiles([
+    'scenarios/coffee-shop.yaml',
+    'scenarios/retail-store.yaml',
+    'scenarios/saas-product.yaml',
+  ]);
+
+  assert.match(summary, /Business: Downtown Coffee/);
+  assert.match(summary, /Business: Main Street Retail/);
+  assert.match(summary, /Business: FocusFlow/);
+  assert.match(summary, /Consolidated Report/);
+});
+
+test('consolidated report totals stay consistent with runSimulation output', () => {
+  const retail = loadYamlScenario('scenarios/retail-store.yaml');
+  const retailResult = runSimulation(retail.input, retail.config);
+  const report = formatConsolidatedReport([
+    {
+      filePath: 'scenarios/retail-store.yaml',
+      input: retail.input,
+      result: retailResult,
+    },
+  ]);
+
+  assert.match(report, /Business: Main Street Retail/);
+  assert.match(report, new RegExp(`Revenue: ${retailResult.revenue.toFixed(2)}`));
+  assert.match(
+    report,
+    new RegExp(
+      `Final Cumulative Profit: ${retailResult.cumulativeProfit.at(-1).toFixed(2)}`,
+    ),
+  );
+});
+
+test('batch runner can export a consolidated CSV report', () => {
+  const csvPath = join(tmpdir(), 'revrem-cli-scenarios.csv');
+
+  writeConsolidatedCsv(csvPath, [
+    {
+      filePath: 'scenarios/coffee-shop.yaml',
+      ...loadYamlScenario('scenarios/coffee-shop.yaml'),
+      result: runSimulation(
+        loadYamlScenario('scenarios/coffee-shop.yaml').input,
+        loadYamlScenario('scenarios/coffee-shop.yaml').config,
+      ),
+    },
+  ]);
+
+  const csvContents = readFileSync(csvPath, 'utf8');
+
+  assert.match(csvContents, /businessName,revenue,grossProfit,netProfit/);
+  assert.match(csvContents, /Downtown Coffee/);
+
+  rmSync(csvPath, { force: true });
 });

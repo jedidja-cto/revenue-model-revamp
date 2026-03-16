@@ -3,6 +3,7 @@ import {
   calculateBreakEvenUnits,
 } from './breakEven.js';
 import { calculateCumulativeProfit, calculateRunway } from './cashflow.js';
+import { resolveSimulationEngineConfig } from './config.js';
 import {
   calculateCostOfGoods,
   calculateGrossProfit,
@@ -13,9 +14,14 @@ import {
 import { calculateGrossMargin, calculateProfitMargin } from './metrics.js';
 import { projectMonthlyFinancials } from './projection.js';
 import { applyScenarioTransform } from './scenarioTransform.js';
+import type { SimulationEngineConfig } from './config.js';
 import type { SimulationEngineInput, SimulationResult } from './types.js';
 
-export function runSimulation(input: SimulationEngineInput): SimulationResult {
+export function runSimulation(
+  input: SimulationEngineInput,
+  config?: Partial<SimulationEngineConfig>,
+): SimulationResult {
+  const resolvedConfig = resolveSimulationEngineConfig(config);
   const transformedInput = applyScenarioTransform(input);
   const revenue = calculateRevenue(transformedInput.products);
   const costOfGoods = calculateCostOfGoods(transformedInput.products);
@@ -34,7 +40,7 @@ export function runSimulation(input: SimulationEngineInput): SimulationResult {
   );
   const monthlyProjection = projectMonthlyFinancials(
     transformedInput,
-    transformedInput.business ? 12 : 0,
+    transformedInput.business ? resolvedConfig.projectionMonths : 0,
   );
   const cumulativeProfit = calculateCumulativeProfit(
     monthlyProjection.map((projection) => projection.profit),

@@ -12,12 +12,6 @@ export type {
   SimulationScenario,
 } from '@revrem/data-models';
 
-export interface SimulationEngineConfig {
-  currency: string;
-  projectionMonths: number;
-  taxRate: number;
-}
-
 export interface SimulationEngineInput {
   business: Business;
   products: Product[];

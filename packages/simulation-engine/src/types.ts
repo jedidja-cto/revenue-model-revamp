@@ -32,6 +32,10 @@ export interface SimulationResult {
   monthlyProjection: MonthlyProjection[];
   cumulativeProfit: number[];
   runway: number;
+  taxPaid: number[];
+  profitAfterTax: number[];
+  depreciation: number[];
+  netCashflow: number[];
 }
 
 export interface MonthlyProjection {

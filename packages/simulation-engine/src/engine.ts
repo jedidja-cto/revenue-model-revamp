@@ -2,8 +2,13 @@ import {
   calculateBreakEvenRevenue,
   calculateBreakEvenUnits,
 } from './breakEven.js';
-import { calculateCumulativeProfit, calculateRunway } from './cashflow.js';
+import {
+  calculateCumulativeProfit,
+  calculateNetCashflow,
+  calculateRunway,
+} from './cashflow.js';
 import { resolveSimulationEngineConfig } from './config.js';
+import { calculateDepreciation } from './depreciation.js';
 import {
   calculateCostOfGoods,
   calculateGrossProfit,
@@ -14,9 +19,26 @@ import {
 import { calculateGrossMargin, calculateProfitMargin } from './metrics.js';
 import { projectMonthlyFinancials } from './projection.js';
 import { applyScenarioTransform } from './scenarioTransform.js';
+import { calculateTax } from './tax.js';
 import { validateSimulationInput } from './validation.js';
 import type { SimulationEngineConfig } from './config.js';
 import type { SimulationEngineInput, SimulationResult } from './types.js';
+
+function resolveDepreciationSchedule(
+  projectionMonths: number,
+  config: ReturnType<typeof resolveSimulationEngineConfig>,
+): number[] {
+  if (!config.capexSchedule) {
+    return Array(projectionMonths).fill(0);
+  }
+
+  const schedule = calculateDepreciation(
+    config.capexSchedule.capex,
+    config.capexSchedule.months,
+  );
+
+  return Array.from({ length: projectionMonths }, (_, index) => schedule[index] ?? 0);
+}
 
 export function runSimulation(
   input: SimulationEngineInput,
@@ -47,9 +69,18 @@ export function runSimulation(
   const cumulativeProfit = calculateCumulativeProfit(
     monthlyProjection.map((projection) => projection.profit),
   );
-  const runway = calculateRunway(
-    monthlyProjection.map((projection) => projection.profit),
+  const taxPaid = monthlyProjection.map((projection) =>
+    calculateTax(projection.profit, resolvedConfig.taxRate),
   );
+  const profitAfterTax = monthlyProjection.map(
+    (projection, index) => projection.profit - taxPaid[index],
+  );
+  const depreciation = resolveDepreciationSchedule(
+    monthlyProjection.length,
+    resolvedConfig,
+  );
+  const netCashflow = calculateNetCashflow(profitAfterTax, depreciation);
+  const runway = calculateRunway(netCashflow);
 
   return {
     revenue,
@@ -64,5 +95,9 @@ export function runSimulation(
     monthlyProjection,
     cumulativeProfit,
     runway,
+    taxPaid,
+    profitAfterTax,
+    depreciation,
+    netCashflow,
   };
 }

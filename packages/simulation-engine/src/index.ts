@@ -1,36 +1,20 @@
-import type {
-  Business,
-  Expense,
-  Product,
-  SimulationScenario,
-} from '@revrem/data-models';
-
+export {
+  calculateCostOfGoods,
+  calculateGrossProfit,
+  calculateNetProfit,
+  calculateOperatingExpenses,
+  calculateRevenue,
+} from './financialCalculations.js';
+export { runSimulation } from './engine.js';
+export { applyScenarioTransform } from './scenarioTransform.js';
 export type {
   Business,
   Expense,
   Product,
+  SimulationEngineConfig,
+  SimulationEngineInput,
+  SimulationResult,
   SimulationScenario,
-} from '@revrem/data-models';
+} from './types.js';
 
-export interface SimulationEngineConfig {
-  currency: string;
-  projectionMonths: number;
-  taxRate: number;
-}
-
-export interface SimulationScenarioSummary {
-  name: string;
-}
-
-export interface SimulationEngineInput {
-  business: Business;
-  products: Product[];
-  expenses: Expense[];
-  scenario: SimulationScenario;
-}
-
-export const SIMULATION_ENGINE_VERSION = '0.1.0';
-
-export function createSimulationEnginePlaceholder(): string {
-  return 'Simulation engine scaffolding is ready for Phase 2.';
-}
+export const SIMULATION_ENGINE_VERSION = '0.3.0';

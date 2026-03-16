@@ -31,5 +31,16 @@ export interface SimulationResult {
   grossProfit: number;
   operatingExpenses: number;
   netProfit: number;
+  grossMargin: number;
+  profitMargin: number;
+  breakEvenUnits: number;
+  breakEvenRevenue: number;
+  monthlyProjection: MonthlyProjection[];
 }
 
+export interface MonthlyProjection {
+  month: number;
+  revenue: number;
+  expenses: number;
+  profit: number;
+}

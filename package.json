@@ -7,11 +7,12 @@
     "node": ">=20.0.0"
   },
   "scripts": {
-    "build": "node ./node_modules/typescript/bin/tsc -b packages/data-models/tsconfig.json packages/simulation-engine/tsconfig.json",
+    "build": "node ./node_modules/typescript/bin/tsc -b packages/data-models/tsconfig.json packages/simulation-engine/tsconfig.json packages/cli/tsconfig.json",
     "lint": "eslint .",
     "format": "prettier --check .",
     "format:write": "prettier --write .",
-    "typecheck": "node ./node_modules/typescript/bin/tsc -b packages/data-models/tsconfig.json packages/simulation-engine/tsconfig.json"
+    "simulate": "node ./node_modules/typescript/bin/tsc -b packages/data-models/tsconfig.json packages/simulation-engine/tsconfig.json packages/cli/tsconfig.json && node packages/cli/dist/index.js",
+    "typecheck": "node ./node_modules/typescript/bin/tsc -b packages/data-models/tsconfig.json packages/simulation-engine/tsconfig.json packages/cli/tsconfig.json"
   },
   "devDependencies": {
     "@eslint/js": "^9.22.0",

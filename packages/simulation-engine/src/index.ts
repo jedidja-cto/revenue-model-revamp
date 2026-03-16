@@ -2,11 +2,17 @@ export {
   calculateBreakEvenRevenue,
   calculateBreakEvenUnits,
 } from './breakEven.js';
-export { calculateCumulativeProfit, calculateRunway } from './cashflow.js';
+export {
+  calculateCashShortfall,
+  calculateCumulativeProfit,
+  calculateNetCashflow,
+  calculateRunway,
+} from './cashflow.js';
 export {
   DEFAULT_SIMULATION_ENGINE_CONFIG,
   resolveSimulationEngineConfig,
 } from './config.js';
+export { calculateDepreciation } from './depreciation.js';
 export {
   calculateCostOfGoods,
   calculateGrossProfit,
@@ -29,8 +35,9 @@ export {
   steadyGrowth,
 } from './scenarioPresets.js';
 export { applyScenarioTransform } from './scenarioTransform.js';
+export { calculateTax } from './tax.js';
 export { validateSimulationInput } from './validation.js';
-export type { SimulationEngineConfig } from './config.js';
+export type { CapexSchedule, SimulationEngineConfig } from './config.js';
 export type {
   Business,
   Expense,
@@ -41,4 +48,4 @@ export type {
   SimulationScenario,
 } from './types.js';
 
-export const SIMULATION_ENGINE_VERSION = '0.6.0';
+export const SIMULATION_ENGINE_VERSION = '0.7.0';

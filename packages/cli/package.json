@@ -10,6 +10,7 @@
   ],
   "dependencies": {
     "@revenue-model-revamp/simulation-engine": "workspace:*",
+    "commander": "^13.1.0",
     "yaml": "^2.8.1"
   },
   "scripts": {
@@ -17,4 +18,3 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   }
 }
-

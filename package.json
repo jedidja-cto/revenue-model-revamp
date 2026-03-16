@@ -15,6 +15,7 @@
     "typecheck": "node ./node_modules/typescript/bin/tsc -b packages/data-models/tsconfig.json packages/simulation-engine/tsconfig.json packages/cli/tsconfig.json"
   },
   "devDependencies": {
+    "@types/node": "^24.5.2",
     "@eslint/js": "^9.22.0",
     "eslint": "^9.22.0",
     "prettier": "^3.5.3",

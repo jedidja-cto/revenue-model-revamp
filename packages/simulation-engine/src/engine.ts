@@ -14,6 +14,7 @@ import {
 import { calculateGrossMargin, calculateProfitMargin } from './metrics.js';
 import { projectMonthlyFinancials } from './projection.js';
 import { applyScenarioTransform } from './scenarioTransform.js';
+import { validateSimulationInput } from './validation.js';
 import type { SimulationEngineConfig } from './config.js';
 import type { SimulationEngineInput, SimulationResult } from './types.js';
 
@@ -21,6 +22,7 @@ export function runSimulation(
   input: SimulationEngineInput,
   config?: Partial<SimulationEngineConfig>,
 ): SimulationResult {
+  validateSimulationInput(input);
   const resolvedConfig = resolveSimulationEngineConfig(config);
   const transformedInput = applyScenarioTransform(input);
   const revenue = calculateRevenue(transformedInput.products);

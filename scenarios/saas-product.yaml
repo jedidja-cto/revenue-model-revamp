@@ -1,0 +1,39 @@
+business:
+  name: FocusFlow
+  industry: Software
+  currency: NAD
+
+products:
+  - name: Pro Subscription
+    category: Subscription
+    sellingPrice: 220
+    costPrice: 55
+    estimatedMonthlyUnits: 180
+
+expenses:
+  - name: Hosting
+    category: software
+    amountMonthly: 6500
+    fixed: true
+  - name: Engineering Salaries
+    category: salaries
+    amountMonthly: 42000
+    fixed: true
+  - name: Acquisition Ads
+    category: marketing
+    amountMonthly: 9000
+    fixed: false
+
+scenario:
+  name: SaaS growth
+  priceChangePercent: 0
+  costChangePercent: 1
+  demandChangePercent: 8
+  expenseChangePercent: 2
+
+config:
+  projectionMonths: 6
+  taxRate: 0.2
+  capexSchedule:
+    capex: 18000
+    months: 18

@@ -1,0 +1,45 @@
+business:
+  name: Downtown Coffee
+  industry: Food & Beverage
+  currency: NAD
+
+products:
+  - name: Latte
+    category: Beverage
+    sellingPrice: 45
+    costPrice: 18
+    estimatedMonthlyUnits: 900
+  - name: Muffin
+    category: Bakery
+    sellingPrice: 28
+    costPrice: 10
+    estimatedMonthlyUnits: 450
+
+expenses:
+  - name: Rent
+    category: rent
+    amountMonthly: 12000
+    fixed: true
+  - name: Staff
+    category: salaries
+    amountMonthly: 18000
+    fixed: true
+  - name: Utilities
+    category: electricity
+    amountMonthly: 3500
+    fixed: true
+
+scenario:
+  name: Steady shop growth
+  priceChangePercent: 1
+  costChangePercent: 0.5
+  demandChangePercent: 2
+  expenseChangePercent: 0.3
+
+config:
+  projectionMonths: 6
+  taxRate: 0.2
+  capexSchedule:
+    capex: 24000
+    months: 12
+

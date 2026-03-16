@@ -1,0 +1,45 @@
+business:
+  name: Main Street Retail
+  industry: Retail
+  currency: NAD
+
+products:
+  - name: Sneaker
+    category: Footwear
+    sellingPrice: 650
+    costPrice: 350
+    estimatedMonthlyUnits: 220
+  - name: Jacket
+    category: Apparel
+    sellingPrice: 520
+    costPrice: 280
+    estimatedMonthlyUnits: 140
+
+expenses:
+  - name: Mall Rent
+    category: rent
+    amountMonthly: 28000
+    fixed: true
+  - name: Payroll
+    category: salaries
+    amountMonthly: 32000
+    fixed: true
+  - name: Marketing
+    category: marketing
+    amountMonthly: 8000
+    fixed: false
+
+scenario:
+  name: Promo pressure
+  priceChangePercent: -3
+  costChangePercent: 2
+  demandChangePercent: 4
+  expenseChangePercent: 1
+
+config:
+  projectionMonths: 6
+  taxRate: 0.22
+  capexSchedule:
+    capex: 60000
+    months: 24
+

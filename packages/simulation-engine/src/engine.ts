@@ -32,8 +32,8 @@ export function runSimulation(input: SimulationEngineInput): SimulationResult {
     transformedInput.products,
   );
   const monthlyProjection = projectMonthlyFinancials(
-    input,
-    input.business ? 12 : 0,
+    transformedInput,
+    transformedInput.business ? 12 : 0,
   );
 
   return {

@@ -10,7 +10,6 @@ import {
   applyDemandGrowth,
   applyPriceGrowth,
 } from './growthModel.js';
-import { applyScenarioTransform } from './scenarioTransform.js';
 import type {
   Expense,
   MonthlyProjection,
@@ -57,15 +56,14 @@ export function projectMonthlyFinancials(
   months: number,
 ): MonthlyProjection[] {
   const normalizedMonths = Math.max(0, Math.floor(months));
-  const transformedInput = applyScenarioTransform(input);
 
   return Array.from({ length: normalizedMonths }, (_, index) => {
     const month = index + 1;
-    const projectedProducts = transformedInput.products.map((product) =>
-      projectProduct(product, transformedInput, month),
+    const projectedProducts = input.products.map((product) =>
+      projectProduct(product, input, month),
     );
-    const projectedExpenses = transformedInput.expenses.map((expense) =>
-      projectExpense(expense, transformedInput, month),
+    const projectedExpenses = input.expenses.map((expense) =>
+      projectExpense(expense, input, month),
     );
     const revenue = calculateRevenue(projectedProducts);
     const costOfGoods = calculateCostOfGoods(projectedProducts);

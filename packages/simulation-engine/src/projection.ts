@@ -17,10 +17,14 @@ import type {
   SimulationEngineInput,
 } from './types.js';
 
-function projectProduct(product: Product, input: SimulationEngineInput, month: number): Product {
-  const priceGrowthRate = input.scenario.priceChangePercent / 100;
-  const costInflationRate = input.scenario.costChangePercent / 100;
-  const demandGrowthRate = input.scenario.demandChangePercent / 100;
+function projectProduct(
+  product: Product,
+  transformedInput: SimulationEngineInput,
+  month: number,
+): Product {
+  const priceGrowthRate = transformedInput.scenario.priceChangePercent / 100;
+  const costInflationRate = transformedInput.scenario.costChangePercent / 100;
+  const demandGrowthRate = transformedInput.scenario.demandChangePercent / 100;
 
   return {
     ...product,
@@ -36,10 +40,10 @@ function projectProduct(product: Product, input: SimulationEngineInput, month: n
 
 function projectExpense(
   expense: Expense,
-  input: SimulationEngineInput,
+  transformedInput: SimulationEngineInput,
   month: number,
 ): Expense {
-  const expenseGrowthRate = input.scenario.expenseChangePercent / 100;
+  const expenseGrowthRate = transformedInput.scenario.expenseChangePercent / 100;
 
   return {
     ...expense,
@@ -52,18 +56,18 @@ function projectExpense(
 }
 
 export function projectMonthlyFinancials(
-  input: SimulationEngineInput,
+  transformedInput: SimulationEngineInput,
   months: number,
 ): MonthlyProjection[] {
   const normalizedMonths = Math.max(0, Math.floor(months));
 
   return Array.from({ length: normalizedMonths }, (_, index) => {
     const month = index + 1;
-    const projectedProducts = input.products.map((product) =>
-      projectProduct(product, input, month),
+    const projectedProducts = transformedInput.products.map((product) =>
+      projectProduct(product, transformedInput, month),
     );
-    const projectedExpenses = input.expenses.map((expense) =>
-      projectExpense(expense, input, month),
+    const projectedExpenses = transformedInput.expenses.map((expense) =>
+      projectExpense(expense, transformedInput, month),
     );
     const revenue = calculateRevenue(projectedProducts);
     const costOfGoods = calculateCostOfGoods(projectedProducts);

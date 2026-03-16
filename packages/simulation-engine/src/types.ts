@@ -36,6 +36,8 @@ export interface SimulationResult {
   breakEvenUnits: number;
   breakEvenRevenue: number;
   monthlyProjection: MonthlyProjection[];
+  cumulativeProfit: number[];
+  runway: number;
 }
 
 export interface MonthlyProjection {

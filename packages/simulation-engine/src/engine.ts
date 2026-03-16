@@ -2,6 +2,7 @@ import {
   calculateBreakEvenRevenue,
   calculateBreakEvenUnits,
 } from './breakEven.js';
+import { calculateCumulativeProfit, calculateRunway } from './cashflow.js';
 import {
   calculateCostOfGoods,
   calculateGrossProfit,
@@ -35,6 +36,12 @@ export function runSimulation(input: SimulationEngineInput): SimulationResult {
     transformedInput,
     transformedInput.business ? 12 : 0,
   );
+  const cumulativeProfit = calculateCumulativeProfit(
+    monthlyProjection.map((projection) => projection.profit),
+  );
+  const runway = calculateRunway(
+    monthlyProjection.map((projection) => projection.profit),
+  );
 
   return {
     revenue,
@@ -47,5 +54,7 @@ export function runSimulation(input: SimulationEngineInput): SimulationResult {
     breakEvenUnits,
     breakEvenRevenue,
     monthlyProjection,
+    cumulativeProfit,
+    runway,
   };
 }

@@ -5,8 +5,52 @@ import {
   calculateOperatingExpenses,
   calculateRevenue,
 } from './financialCalculations.js';
+import {
+  applyCostInflation,
+  applyDemandGrowth,
+  applyPriceGrowth,
+} from './growthModel.js';
 import { applyScenarioTransform } from './scenarioTransform.js';
-import type { MonthlyProjection, SimulationEngineInput } from './types.js';
+import type {
+  Expense,
+  MonthlyProjection,
+  Product,
+  SimulationEngineInput,
+} from './types.js';
+
+function projectProduct(product: Product, input: SimulationEngineInput, month: number): Product {
+  const priceGrowthRate = input.scenario.priceChangePercent / 100;
+  const costInflationRate = input.scenario.costChangePercent / 100;
+  const demandGrowthRate = input.scenario.demandChangePercent / 100;
+
+  return {
+    ...product,
+    sellingPrice: applyPriceGrowth(product.sellingPrice, priceGrowthRate, month),
+    costPrice: applyCostInflation(product.costPrice, costInflationRate, month),
+    estimatedMonthlyUnits: applyDemandGrowth(
+      product.estimatedMonthlyUnits,
+      demandGrowthRate,
+      month,
+    ),
+  };
+}
+
+function projectExpense(
+  expense: Expense,
+  input: SimulationEngineInput,
+  month: number,
+): Expense {
+  const expenseGrowthRate = input.scenario.expenseChangePercent / 100;
+
+  return {
+    ...expense,
+    amountMonthly: applyCostInflation(
+      expense.amountMonthly,
+      expenseGrowthRate,
+      month,
+    ),
+  };
+}
 
 export function projectMonthlyFinancials(
   input: SimulationEngineInput,
@@ -14,16 +58,26 @@ export function projectMonthlyFinancials(
 ): MonthlyProjection[] {
   const normalizedMonths = Math.max(0, Math.floor(months));
   const transformedInput = applyScenarioTransform(input);
-  const revenue = calculateRevenue(transformedInput.products);
-  const costOfGoods = calculateCostOfGoods(transformedInput.products);
-  const grossProfit = calculateGrossProfit(revenue, costOfGoods);
-  const operatingExpenses = calculateOperatingExpenses(transformedInput.expenses);
-  const netProfit = calculateNetProfit(grossProfit, operatingExpenses);
 
-  return Array.from({ length: normalizedMonths }, (_, index) => ({
-    month: index + 1,
-    revenue,
-    expenses: operatingExpenses,
-    profit: netProfit,
-  }));
+  return Array.from({ length: normalizedMonths }, (_, index) => {
+    const month = index + 1;
+    const projectedProducts = transformedInput.products.map((product) =>
+      projectProduct(product, transformedInput, month),
+    );
+    const projectedExpenses = transformedInput.expenses.map((expense) =>
+      projectExpense(expense, transformedInput, month),
+    );
+    const revenue = calculateRevenue(projectedProducts);
+    const costOfGoods = calculateCostOfGoods(projectedProducts);
+    const grossProfit = calculateGrossProfit(revenue, costOfGoods);
+    const operatingExpenses = calculateOperatingExpenses(projectedExpenses);
+    const netProfit = calculateNetProfit(grossProfit, operatingExpenses);
+
+    return {
+      month,
+      revenue,
+      expenses: operatingExpenses,
+      profit: netProfit,
+    };
+  });
 }

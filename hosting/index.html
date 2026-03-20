@@ -17,144 +17,220 @@
   </head>
   <body>
     <section id="auth-screen" class="auth-screen">
-      <article class="auth-card-shell" aria-labelledby="auth-heading">
-        <div class="auth-branding">
-          <span class="brand-mark" aria-hidden="true"></span>
-          <p class="auth-kicker">REVENUE MODEL REVAMP</p>
+      <div class="landing-status-bar">
+        <p>Browser-based revenue, margin, cashflow, and runway modeling for people who need real numbers fast.</p>
+      </div>
+
+      <header class="landing-navbar">
+        <div class="landing-brand">
+          <span class="brand-mark brand-mark-pulse" aria-hidden="true"></span>
+          <div>
+            <p class="topbar-kicker">Revenue Model Revamp</p>
+            <strong>Know if the model holds.</strong>
+          </div>
         </div>
-        <h1 id="auth-heading">Welcome back</h1>
-        <p class="auth-subtitle">Sign in to save and manage your scenarios</p>
+        <p class="landing-version">v0.1.0</p>
+      </header>
 
-        <button id="google-button" type="button" class="button button-primary button-google">
-          <span class="google-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" role="img" aria-hidden="true">
-              <path
-                fill="#4285F4"
-                d="M21.6 12.23c0-.72-.06-1.25-.19-1.8H12v3.4h5.53c-.11.85-.72 2.13-2.08 2.99l-.02.11 3.02 2.34.21.02c1.91-1.76 2.94-4.35 2.94-7.06Z"
-              />
-              <path
-                fill="#34A853"
-                d="M12 22c2.7 0 4.97-.89 6.63-2.42l-3.16-2.47c-.84.58-1.97.99-3.47.99-2.64 0-4.87-1.74-5.67-4.15l-.1.01-3.14 2.43-.03.1C4.71 19.78 8.07 22 12 22Z"
-              />
-              <path
-                fill="#FBBC05"
-                d="M6.33 13.95A5.98 5.98 0 0 1 6 12c0-.68.12-1.34.32-1.95l-.01-.13-3.17-2.46-.1.04A9.98 9.98 0 0 0 2 12c0 1.6.38 3.1 1.05 4.42l3.28-2.47Z"
-              />
-              <path
-                fill="#EA4335"
-                d="M12 5.9c1.89 0 3.17.81 3.9 1.49l2.85-2.78C16.96 2.95 14.7 2 12 2 8.07 2 4.71 4.22 3.04 7.58l3.28 2.47C7.13 7.64 9.36 5.9 12 5.9Z"
-              />
-            </svg>
-          </span>
-          Continue with Google
-        </button>
+      <div class="landing-hero">
+        <section class="landing-copy">
+          <div class="landing-copy-inner">
+            <p class="landing-eyebrow">FOR FOUNDERS, OPERATORS, AND SME OWNERS</p>
+            <h1 class="landing-headline">Find out if your business model actually works before the money runs out.</h1>
+            <p class="landing-subheadline">
+              This is for the moment when you need to know whether the pricing, costs, and sales assumptions make sense.
+              No spreadsheet circus. No finance team required.
+            </p>
 
-        <div class="divider" aria-hidden="true">
-          <span>or</span>
-        </div>
-
-        <button
-          id="toggle-email-auth"
-          type="button"
-          class="button button-secondary"
-          aria-expanded="false"
-          aria-controls="email-auth-panel"
-        >
-          Continue with email and password
-        </button>
-        <section id="email-auth-panel" class="inline-panel" hidden>
-          <form id="email-auth-form" class="stack" novalidate>
-            <label class="field">
-              <span>Email</span>
-              <input id="email-input" type="email" autocomplete="email" required />
-              <span class="field-error" data-error-for="email-input"></span>
-            </label>
-            <label class="field">
-              <span>Password</span>
-              <input
-                id="password-input"
-                type="password"
-                autocomplete="current-password"
-                minlength="6"
-                required
-              />
-              <span class="field-error" data-error-for="password-input"></span>
-            </label>
-            <button id="login-button" type="submit" class="button button-primary">Log in</button>
-          </form>
-          <button id="signup-button" type="button" class="inline-link">
-            Create account
-          </button>
-          <div id="email-auth-feedback" class="feedback error" hidden></div>
-        </section>
-
-        <nav class="auth-alt-links" aria-label="Alternative sign-in methods">
-          <a id="toggle-phone-auth" href="#" class="text-link">
-            Sign in with phone (SMS)
-          </a>
-          <a id="toggle-magic-link" href="#" class="text-link">
-            Sign in with magic link
-          </a>
-        </nav>
-
-        <section id="phone-auth-panel" class="inline-panel" hidden>
-          <form id="phone-auth-form" class="stack" novalidate>
-            <label class="field">
-              <span>Phone number</span>
-              <input
-                id="phone-input"
-                type="tel"
-                inputmode="tel"
-                placeholder="+264812345678"
-                autocomplete="tel"
-              />
-              <span class="field-error" data-error-for="phone-input"></span>
-            </label>
-            <label class="field">
-              <span>Verification code</span>
-              <input
-                id="phone-code-input"
-                type="text"
-                inputmode="numeric"
-                placeholder="123456"
-              />
-              <span class="field-error" data-error-for="phone-code-input"></span>
-            </label>
-            <div class="button-row auth-inline-actions">
-              <button id="phone-send-button" type="button" class="button button-primary">
-                Send code
-              </button>
-              <button id="phone-verify-button" type="button" class="button button-secondary">
-                Verify code
-              </button>
+            <div class="landing-metrics-strip" aria-label="Financial snapshot">
+              <article class="landing-metric">
+                <span>Break-even</span>
+                <strong>N$84k</strong>
+              </article>
+              <article class="landing-metric">
+                <span>Margin</span>
+                <strong>31%</strong>
+              </article>
+              <article class="landing-metric">
+                <span>Cashflow</span>
+                <strong>+N$18k</strong>
+              </article>
+              <article class="landing-metric">
+                <span>Runway</span>
+                <strong>11 mo</strong>
+              </article>
             </div>
-          </form>
-          <div id="phone-auth-feedback" class="feedback error" hidden></div>
-          <div id="phone-recaptcha-container" aria-hidden="true"></div>
+          </div>
+
+          <div class="landing-ticker" aria-label="Feature ticker">
+            <div class="landing-ticker-track">
+              <span>Break-Even</span>
+              <span>Cashflow</span>
+              <span>Margin Model</span>
+              <span>Unit Economics</span>
+              <span>Runway</span>
+              <span>Scenario Planning</span>
+              <span>Tax Impact</span>
+              <span>Monthly Projections</span>
+              <span>Break-Even</span>
+              <span>Cashflow</span>
+              <span>Margin Model</span>
+              <span>Unit Economics</span>
+              <span>Runway</span>
+              <span>Scenario Planning</span>
+              <span>Tax Impact</span>
+              <span>Monthly Projections</span>
+            </div>
+          </div>
         </section>
 
-        <section id="magic-link-panel" class="inline-panel" hidden>
-          <form id="email-link-form" class="stack" novalidate>
-            <label class="field">
-              <span>Email</span>
-              <input id="email-link-input" type="email" autocomplete="email" />
-              <span class="field-error" data-error-for="email-link-input"></span>
-            </label>
-            <button id="email-link-button" type="submit" class="button button-secondary">
-              Send magic link
+        <aside class="landing-auth-column">
+          <article class="auth-card-shell" aria-labelledby="auth-heading">
+            <div class="auth-branding">
+              <span class="brand-mark" aria-hidden="true"></span>
+              <p class="auth-kicker">REVENUE MODEL REVAMP</p>
+            </div>
+            <h1 id="auth-heading">Welcome back</h1>
+            <p class="auth-subtitle">Sign in to save and manage your scenarios</p>
+
+            <button id="google-button" type="button" class="button button-primary button-google">
+              <span class="google-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" role="img" aria-hidden="true">
+                  <path
+                    fill="#4285F4"
+                    d="M21.6 12.23c0-.72-.06-1.25-.19-1.8H12v3.4h5.53c-.11.85-.72 2.13-2.08 2.99l-.02.11 3.02 2.34.21.02c1.91-1.76 2.94-4.35 2.94-7.06Z"
+                  />
+                  <path
+                    fill="#34A853"
+                    d="M12 22c2.7 0 4.97-.89 6.63-2.42l-3.16-2.47c-.84.58-1.97.99-3.47.99-2.64 0-4.87-1.74-5.67-4.15l-.1.01-3.14 2.43-.03.1C4.71 19.78 8.07 22 12 22Z"
+                  />
+                  <path
+                    fill="#FBBC05"
+                    d="M6.33 13.95A5.98 5.98 0 0 1 6 12c0-.68.12-1.34.32-1.95l-.01-.13-3.17-2.46-.1.04A9.98 9.98 0 0 0 2 12c0 1.6.38 3.1 1.05 4.42l3.28-2.47Z"
+                  />
+                  <path
+                    fill="#EA4335"
+                    d="M12 5.9c1.89 0 3.17.81 3.9 1.49l2.85-2.78C16.96 2.95 14.7 2 12 2 8.07 2 4.71 4.22 3.04 7.58l3.28 2.47C7.13 7.64 9.36 5.9 12 5.9Z"
+                  />
+                </svg>
+              </span>
+              Continue with Google
             </button>
-          </form>
-          <div id="email-link-feedback" class="feedback error" hidden></div>
-        </section>
 
-        <p class="auth-credit">
-          Designed by
-          <a href="https://welwitschiadata.com" target="_blank" rel="noreferrer">
-            Welwitschia Data
-          </a>
-        </p>
-        <div id="auth-global-feedback" class="feedback feedback-neutral" hidden></div>
-      </article>
+            <div class="divider" aria-hidden="true">
+              <span>or</span>
+            </div>
+
+            <button
+              id="toggle-email-auth"
+              type="button"
+              class="button button-secondary"
+              aria-expanded="false"
+              aria-controls="email-auth-panel"
+            >
+              Continue with email and password
+            </button>
+            <section id="email-auth-panel" class="inline-panel" hidden>
+              <form id="email-auth-form" class="stack" novalidate>
+                <label class="field">
+                  <span>Email</span>
+                  <input id="email-input" type="email" autocomplete="email" required />
+                  <span class="field-error" data-error-for="email-input"></span>
+                </label>
+                <label class="field">
+                  <span>Password</span>
+                  <input
+                    id="password-input"
+                    type="password"
+                    autocomplete="current-password"
+                    minlength="6"
+                    required
+                  />
+                  <span class="field-error" data-error-for="password-input"></span>
+                </label>
+                <button id="login-button" type="submit" class="button button-primary">Log in</button>
+              </form>
+              <button id="signup-button" type="button" class="inline-link">
+                Create account
+              </button>
+              <div id="email-auth-feedback" class="feedback error" hidden></div>
+            </section>
+
+            <nav class="auth-alt-links" aria-label="Alternative sign-in methods">
+              <a id="toggle-phone-auth" href="#" class="text-link">
+                Sign in with phone (SMS)
+              </a>
+              <a id="toggle-magic-link" href="#" class="text-link">
+                Sign in with magic link
+              </a>
+            </nav>
+
+            <section id="phone-auth-panel" class="inline-panel" hidden>
+              <form id="phone-auth-form" class="stack" novalidate>
+                <label class="field">
+                  <span>Phone number</span>
+                  <input
+                    id="phone-input"
+                    type="tel"
+                    inputmode="tel"
+                    placeholder="+264812345678"
+                    autocomplete="tel"
+                  />
+                  <span class="field-error" data-error-for="phone-input"></span>
+                </label>
+                <label class="field">
+                  <span>Verification code</span>
+                  <input
+                    id="phone-code-input"
+                    type="text"
+                    inputmode="numeric"
+                    placeholder="123456"
+                  />
+                  <span class="field-error" data-error-for="phone-code-input"></span>
+                </label>
+                <div class="button-row auth-inline-actions">
+                  <button id="phone-send-button" type="button" class="button button-primary">
+                    Send code
+                  </button>
+                  <button id="phone-verify-button" type="button" class="button button-secondary">
+                    Verify code
+                  </button>
+                </div>
+              </form>
+              <div id="phone-auth-feedback" class="feedback error" hidden></div>
+              <div id="phone-recaptcha-container" aria-hidden="true"></div>
+            </section>
+
+            <section id="magic-link-panel" class="inline-panel" hidden>
+              <form id="email-link-form" class="stack" novalidate>
+                <label class="field">
+                  <span>Email</span>
+                  <input id="email-link-input" type="email" autocomplete="email" />
+                  <span class="field-error" data-error-for="email-link-input"></span>
+                </label>
+                <button id="email-link-button" type="submit" class="button button-secondary">
+                  Send magic link
+                </button>
+              </form>
+              <div id="email-link-feedback" class="feedback error" hidden></div>
+            </section>
+
+            <div id="auth-global-feedback" class="feedback feedback-neutral" hidden></div>
+          </article>
+        </aside>
+      </div>
+
+      <footer class="landing-footer">
+        <div class="landing-footer-inner">
+          <p>Revenue Model Revamp <span>v0.1.0</span></p>
+          <p>
+            Designed by
+            <a href="https://welwitschiadata.com" target="_blank" rel="noreferrer">
+              Welwitschia Data
+            </a>
+          </p>
+        </div>
+      </footer>
     </section>
 
     <section id="app-shell" class="app-shell hidden">

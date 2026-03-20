@@ -1,11 +1,10 @@
 # Revenue Model Revamp
 
-![Firebase Hosting](https://img.shields.io/badge/Firebase-Hosting-orange)
-![Firestore](https://img.shields.io/badge/Firebase-Firestore-yellow)
-![Firebase Auth](https://img.shields.io/badge/Auth-Firebase-blue)
-![TypeScript](https://img.shields.io/badge/TypeScript-Ready-3178C6)
-![pnpm](https://img.shields.io/badge/Package_Manager-pnpm-F69220)
-![Spark MVP](https://img.shields.io/badge/Stage-Spark_MVP-2C2C2A)
+![Firebase Hosting](https://img.shields.io/badge/Firebase-Hosting-FFCA28?logo=firebase&logoColor=black)
+![Firestore](https://img.shields.io/badge/Firebase-Firestore-FFCA28?logo=firebase&logoColor=black)
+![Firebase Auth](https://img.shields.io/badge/Firebase-Auth-FFCA28?logo=firebase&logoColor=black)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)
+![pnpm](https://img.shields.io/badge/pnpm-F69220?logo=pnpm&logoColor=white)
 
 ## What This Is
 

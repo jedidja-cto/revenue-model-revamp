@@ -12,5 +12,9 @@ window.APP_UI_CONFIG = {
   feedbackUrl:
     'https://wa.me/264816457449?text=Hi%20Jedidja%2C%20I%20have%20feedback%20about%20Revenue%20Model%20Revamp.',
   feedbackLabel: 'Send feedback on WhatsApp',
-  allowedEmails: ['jedidjacto@gmail.com', 'stancydesigns@gmail.com'],
+  allowedEmails: [
+    'jedidjacto@gmail.com',
+    'stancydesigns@gmail.com',
+    'mekerekaura.com@gmail.com',
+  ],
 };

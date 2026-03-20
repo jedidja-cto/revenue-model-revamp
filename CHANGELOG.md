@@ -21,6 +21,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improved README and product documentation to reflect the actual MVP and target use cases
 - Refined the authentication screen and replaced the guest link with a design credit
 - Limited the `Run simulation` CTA to the `Review & Run` step only
+- Added a `Run another scenario` action from the results view so users can jump back to the business step
+- Renamed exported CSV files to include the active business name, scenario name, and a unique timestamp suffix
+- Added optional configurable feedback links in the hosted UI for WhatsApp or form-based tester feedback
 
 ### Fixed
 

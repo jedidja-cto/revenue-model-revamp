@@ -129,12 +129,17 @@ const resultsSummary = document.querySelector('#results-summary');
 const resultsTable = document.querySelector('#results-table');
 const historyList = document.querySelector('#history-list');
 const downloadCsvButton = document.querySelector('#download-csv-button');
+const runAnotherScenarioButton = document.querySelector('#run-another-scenario-button');
+const feedbackLinkButton = document.querySelector('#feedback-link-button');
 const resultsChartCanvas = document.querySelector('#results-chart');
 
 let currentStep = 1;
 let currentRows = [];
 let resultsChart = null;
 let hasRenderedResults = false;
+let activeScenarioContext = null;
+
+const appUiConfig = window.APP_UI_CONFIG || {};
 
 function escapeHtml(value) {
   return String(value ?? '')
@@ -172,12 +177,29 @@ function formatTimestamp(value) {
   return new Date(value).toLocaleDateString();
 }
 
+function buildCsvFileName() {
+  const businessName = slugify(activeScenarioContext?.businessName || 'revenue-model');
+  const scenarioName = slugify(activeScenarioContext?.scenarioName || 'scenario-report');
+  const uniqueSuffix = Date.now();
+  return `${businessName}-${scenarioName}-${uniqueSuffix}.csv`;
+}
+
 function escapeCsvCell(value) {
   const text = String(value ?? '');
   if (text.includes(',') || text.includes('"') || text.includes('\n')) {
     return `"${text.replaceAll('"', '""')}"`;
   }
   return text;
+}
+
+function slugify(value) {
+  return (
+    String(value ?? '')
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '') || 'scenario'
+  );
 }
 
 function getMonthLabels(length) {
@@ -624,6 +646,17 @@ function goToStep(step) {
   updateStepUi();
 }
 
+function resetBuilderForNewScenario() {
+  goToStep(1);
+  businessNameInput.focus();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  setFeedback(
+    formFeedback,
+    'You can adjust the details above and run another scenario whenever you are ready.',
+    'neutral',
+  );
+}
+
 function renderSummaryMetrics(result) {
   const totalTax = result.taxPaid.reduce((sum, value) => sum + value, 0);
   const totalNetCashflow = result.netCashflow.reduce((sum, value) => sum + value, 0);
@@ -740,6 +773,10 @@ function renderResultsTable(result) {
 
 function renderResults(input, result) {
   hasRenderedResults = true;
+  activeScenarioContext = {
+    businessName: input.business.name,
+    scenarioName: input.scenario.name,
+  };
   resultsView.classList.remove('hidden');
   resultsScenarioName.textContent = input.scenario.name;
   resultsBusinessName.textContent = input.business.name;
@@ -819,7 +856,7 @@ function downloadCsv() {
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
   link.href = url;
-  link.download = 'revenue-model-revamp-scenarios.csv';
+  link.download = buildCsvFileName();
   link.click();
   URL.revokeObjectURL(url);
 }
@@ -882,6 +919,19 @@ async function handleAuthAction(action, feedbackTarget, button, loadingText) {
 
 function syncBusinessName() {
   topbarBusinessName.textContent = businessNameInput.value.trim() || 'Scenario Builder';
+}
+
+function syncFeedbackLink() {
+  const feedbackUrl = appUiConfig.feedbackUrl?.trim();
+  if (!feedbackUrl) {
+    feedbackLinkButton.hidden = true;
+    feedbackLinkButton.removeAttribute('href');
+    return;
+  }
+
+  feedbackLinkButton.hidden = false;
+  feedbackLinkButton.href = feedbackUrl;
+  feedbackLinkButton.textContent = appUiConfig.feedbackLabel?.trim() || 'Share feedback';
 }
 
 function attachStaticValidation(input) {
@@ -1142,6 +1192,7 @@ nextButton.addEventListener('click', () => {
 });
 
 downloadCsvButton.addEventListener('click', downloadCsv);
+runAnotherScenarioButton.addEventListener('click', resetBuilderForNewScenario);
 
 historyList.addEventListener('click', (event) => {
   const trigger = event.target.closest('[data-scenario-id]');
@@ -1203,6 +1254,7 @@ observeAuthState(async (user) => {
 
   if (!user) {
     hasRenderedResults = false;
+    activeScenarioContext = null;
     resultsView.classList.add('hidden');
     setFeedback(authGlobalFeedback, 'Choose a sign-in method to continue.', 'neutral');
     return;
@@ -1223,5 +1275,6 @@ setupPhoneAuth('phone-send-button', true);
 addInitialRows();
 updateStepUi();
 syncBusinessName();
+syncFeedbackLink();
 renderHistory([]);
 resultsView.classList.add('hidden');

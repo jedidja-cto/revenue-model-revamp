@@ -685,6 +685,14 @@ select {
   padding: 18px 20px;
 }
 
+.results-header-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
 .results-scenario-name {
   margin: 0 0 4px;
   color: var(--color-muted);
@@ -808,7 +816,8 @@ select {
   .app-topbar,
   .wizard-footer,
   .button-row,
-  .results-header {
+  .results-header,
+  .results-header-actions {
     flex-direction: column;
     align-items: stretch;
   }

@@ -7,3 +7,8 @@ window.FIREBASE_CONFIG = {
   appId: '1:180053912400:web:32e1ed2a7a9c7b277a9a55',
   measurementId: 'G-SF4L151XHW',
 };
+
+window.APP_UI_CONFIG = {
+  feedbackUrl: '',
+  feedbackLabel: 'Share feedback',
+};

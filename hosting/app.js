@@ -609,6 +609,9 @@ function updateStepUi() {
   backButton.hidden = currentStep === 1;
   nextButton.hidden = currentStep === 4;
   runSimulationButton.hidden = currentStep !== 4;
+  backButton.classList.toggle('hidden', currentStep === 1);
+  nextButton.classList.toggle('hidden', currentStep === 4);
+  runSimulationButton.classList.toggle('hidden', currentStep !== 4);
   nextButton.textContent = STEP_META[currentStep - 1].nextLabel || '';
 
   if (currentStep === 4) {

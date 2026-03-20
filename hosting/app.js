@@ -677,6 +677,8 @@ function goToStep(step) {
 }
 
 function resetBuilderForNewScenario() {
+  hasRenderedResults = false;
+  activeScenarioContext = null;
   goToStep(1);
   businessNameInput.focus();
   window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -685,6 +687,38 @@ function resetBuilderForNewScenario() {
     'You can adjust the details above and run another scenario whenever you are ready.',
     'neutral',
   );
+}
+
+function clearResultsDisplay() {
+  hasRenderedResults = false;
+  activeScenarioContext = null;
+  resultsScenarioName.textContent = 'Saved scenarios';
+  resultsBusinessName.textContent = 'Run a new simulation above or open one of your saved scenarios below.';
+  resultsSummary.innerHTML = '';
+  resultsTable.innerHTML = '';
+
+  if (resultsChart) {
+    resultsChart.destroy();
+    resultsChart = null;
+  }
+}
+
+function resetScenarioBuilder() {
+  businessNameInput.value = '';
+  businessIndustryInput.value = '';
+  scenarioNameInput.value = 'Baseline';
+  projectionMonthsInput.value = '12';
+  taxRateInput.value = '20';
+  demandChangeInput.value = '0';
+  priceChangeInput.value = '0';
+  costChangeInput.value = '0';
+  expenseChangeInput.value = '0';
+
+  addInitialRows();
+  syncBusinessName();
+  updateReview();
+  clearResultsDisplay();
+  goToStep(1);
 }
 
 function renderSummaryMetrics(result) {
@@ -827,10 +861,6 @@ function applyUserProfile(profile) {
 function renderHistory(rows) {
   currentRows = rows;
   downloadCsvButton.disabled = rows.length === 0;
-  if (rows.length > 0 && !hasRenderedResults) {
-    populateBuilderFromInput(rows[0].input, rows[0].result);
-    renderResults(rows[0].input, rows[0].result);
-  }
 
   resultsView.classList.toggle('hidden', rows.length === 0 && !hasRenderedResults);
 
@@ -1383,6 +1413,7 @@ observeAuthState(async (user) => {
     hasRenderedResults = false;
     activeScenarioContext = null;
     currentUserProfile = null;
+    resetScenarioBuilder();
     resultsView.classList.add('hidden');
     onboardingShell.classList.add('hidden');
     document.querySelector('.wizard-progress').classList.add('hidden');
@@ -1399,6 +1430,7 @@ observeAuthState(async (user) => {
   syncBusinessName();
 
   if (profile?.fullName) {
+    resetScenarioBuilder();
     await refreshHistory();
   } else {
     renderHistory([]);

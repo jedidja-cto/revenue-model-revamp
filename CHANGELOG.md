@@ -26,6 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added optional configurable feedback links in the hosted UI for WhatsApp or form-based tester feedback
 - Added first-run onboarding for signed-in users with profile questions stored in Firestore
 - Switched the signed-in header status to greet users by their stored onboarding name
+- Added a private-beta approval gate so only invited email addresses can access the signed-in app
 
 ### Fixed
 

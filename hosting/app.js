@@ -67,6 +67,8 @@ const appShell = document.querySelector('#app-shell');
 const topbarBusinessName = document.querySelector('#topbar-business-name');
 const authStatus = document.querySelector('#auth-status');
 const signOutButton = document.querySelector('#sign-out-button');
+const accessPendingShell = document.querySelector('#access-pending-shell');
+const accessPendingFeedback = document.querySelector('#access-pending-feedback');
 const onboardingShell = document.querySelector('#onboarding-shell');
 const onboardingForm = document.querySelector('#onboarding-form');
 const onboardingNameInput = document.querySelector('#onboarding-name');
@@ -152,6 +154,9 @@ let activeScenarioContext = null;
 let currentUserProfile = null;
 
 const appUiConfig = window.APP_UI_CONFIG || {};
+const allowedEmails = (appUiConfig.allowedEmails || []).map((email) =>
+  String(email).trim().toLowerCase(),
+);
 
 function escapeHtml(value) {
   return String(value ?? '')
@@ -194,6 +199,15 @@ function buildCsvFileName() {
   const scenarioName = slugify(activeScenarioContext?.scenarioName || 'scenario-report');
   const uniqueSuffix = Date.now();
   return `${businessName}-${scenarioName}-${uniqueSuffix}.csv`;
+}
+
+function getNormalizedUserEmail(user = auth.currentUser) {
+  return user?.email?.trim().toLowerCase() || '';
+}
+
+function isApprovedUser(user = auth.currentUser) {
+  const normalizedEmail = getNormalizedUserEmail(user);
+  return Boolean(normalizedEmail && allowedEmails.includes(normalizedEmail));
 }
 
 function escapeCsvCell(value) {
@@ -721,6 +735,13 @@ function resetScenarioBuilder() {
   goToStep(1);
 }
 
+function hideSignedInContent() {
+  accessPendingShell.classList.add('hidden');
+  onboardingShell.classList.add('hidden');
+  document.querySelector('.wizard-progress').classList.add('hidden');
+  document.querySelector('.app-content').classList.add('hidden');
+}
+
 function renderSummaryMetrics(result) {
   const totalTax = result.taxPaid.reduce((sum, value) => sum + value, 0);
   const totalNetCashflow = result.netCashflow.reduce((sum, value) => sum + value, 0);
@@ -1032,6 +1053,7 @@ function syncAuthStatus() {
 
 function syncOnboardingVisibility() {
   const isComplete = Boolean(currentUserProfile?.fullName);
+  accessPendingShell.classList.add('hidden');
   onboardingShell.classList.toggle('hidden', isComplete);
   document.querySelector('.wizard-progress').classList.toggle('hidden', !isComplete);
   document.querySelector('.app-content').classList.toggle('hidden', !isComplete);
@@ -1415,10 +1437,23 @@ observeAuthState(async (user) => {
     currentUserProfile = null;
     resetScenarioBuilder();
     resultsView.classList.add('hidden');
-    onboardingShell.classList.add('hidden');
-    document.querySelector('.wizard-progress').classList.add('hidden');
-    document.querySelector('.app-content').classList.add('hidden');
+    hideSignedInContent();
     setFeedback(authGlobalFeedback, 'Choose a sign-in method to continue.', 'neutral');
+    return;
+  }
+
+  if (!isApprovedUser(user)) {
+    currentUserProfile = null;
+    resetScenarioBuilder();
+    hideSignedInContent();
+    accessPendingShell.classList.remove('hidden');
+    const normalizedEmail = getNormalizedUserEmail(user);
+    const pendingMessage = normalizedEmail
+      ? `Signed in as ${normalizedEmail}. This account is waiting for private beta approval.`
+      : 'This private beta currently supports approved email accounts only.';
+    setFeedback(authStatus, 'Access pending', 'neutral');
+    setFeedback(accessPendingFeedback, pendingMessage, 'neutral');
+    setFeedback(authGlobalFeedback, '', 'neutral');
     return;
   }
 

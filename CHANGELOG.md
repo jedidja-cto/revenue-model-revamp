@@ -29,12 +29,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added first-run onboarding for signed-in users with profile questions stored in Firestore
 - Switched the signed-in header status to greet users by their stored onboarding name
 - Added a private-beta approval gate so only invited email addresses can access the signed-in app
+- Migrated private-beta access approval into Firestore-backed `allowedUsers` records instead of a frontend config list
+- Tightened Firestore rules so only approved users can read and write scenarios and user profiles
 
 ### Fixed
 
 - Fixed wizard footer visibility so the simulation CTA no longer appears before the final review step
 - Fixed Firebase phone authentication flow so the SMS confirmation result is preserved between code send and verification
 - Fixed the local/browser build flow for the hosted simulation-engine bundle
+- Removed unused anonymous-auth and guest-link code from the hosted MVP
 
 ## [0.1.0] - 2026-03-15
 

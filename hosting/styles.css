@@ -457,8 +457,7 @@ select:focus-visible {
 }
 
 .text-link,
-.inline-link,
-.guest-link {
+.inline-link {
   border: 0;
   background: none;
   padding: 0;
@@ -468,13 +467,8 @@ select:focus-visible {
 }
 
 .text-link:hover,
-.inline-link:hover,
-.guest-link:hover {
+.inline-link:hover {
   color: var(--color-primary);
-}
-
-.guest-link {
-  margin-top: 18px;
 }
 
 .stack {

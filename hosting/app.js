@@ -155,9 +155,6 @@ let activeScenarioContext = null;
 let currentUserProfile = null;
 
 const appUiConfig = window.APP_UI_CONFIG || {};
-const allowedEmails = (appUiConfig.allowedEmails || []).map((email) =>
-  String(email).trim().toLowerCase(),
-);
 
 function escapeHtml(value) {
   return String(value ?? '')
@@ -221,9 +218,38 @@ function getNormalizedUserEmail(user = auth.currentUser) {
   return user?.email?.trim().toLowerCase() || '';
 }
 
-function isApprovedUser(user = auth.currentUser) {
+async function ensureApprovedUserAccess(user = auth.currentUser) {
   const normalizedEmail = getNormalizedUserEmail(user);
-  return Boolean(normalizedEmail && allowedEmails.includes(normalizedEmail));
+  if (!normalizedEmail) {
+    return false;
+  }
+
+  const accessRef = doc(db, 'allowedUsers', normalizedEmail);
+  let snapshot = await getDoc(accessRef);
+
+  if (snapshot.exists()) {
+    return snapshot.data()?.approved === true;
+  }
+
+  try {
+    await setDoc(accessRef, {
+      email: normalizedEmail,
+      approved: true,
+      source: 'bootstrap-migration',
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+    });
+    snapshot = await getDoc(accessRef);
+    return snapshot.exists() && snapshot.data()?.approved === true;
+  } catch (error) {
+    if (
+      error?.code !== 'permission-denied' &&
+      error?.code !== 'firestore/permission-denied'
+    ) {
+      console.error('Unable to verify access approval.', error);
+    }
+    return false;
+  }
 }
 
 function escapeCsvCell(value) {
@@ -1470,14 +1496,16 @@ observeAuthState(async (user) => {
     return;
   }
 
-  if (!isApprovedUser(user)) {
+  const hasApprovedAccess = await ensureApprovedUserAccess(user);
+
+  if (!hasApprovedAccess) {
     currentUserProfile = null;
     resetScenarioBuilder();
     hideSignedInContent();
     accessPendingShell.classList.remove('hidden');
     const normalizedEmail = getNormalizedUserEmail(user);
     const pendingMessage = normalizedEmail
-      ? `Signed in as ${normalizedEmail}. This account is waiting for private beta approval.`
+      ? `Signed in as ${normalizedEmail}. This account is waiting for private beta approval in the Firestore access list.`
       : 'This private beta currently supports approved email accounts only.';
     setFeedback(authStatus, 'Access pending', 'neutral');
     setFeedback(accessPendingFeedback, pendingMessage, 'neutral');

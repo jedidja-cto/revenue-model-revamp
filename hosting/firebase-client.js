@@ -16,7 +16,6 @@ import {
   RecaptchaVerifier,
   sendSignInLinkToEmail,
   setPersistence,
-  signInAnonymously,
   signInWithEmailAndPassword,
   signInWithEmailLink,
   signInWithPhoneNumber,
@@ -86,10 +85,6 @@ export async function signInEmail(email, password) {
 
 export async function signInGoogle() {
   return signInWithPopup(auth, googleProvider);
-}
-
-export async function signInAnonymous() {
-  return signInAnonymously(auth);
 }
 
 export async function logout() {

@@ -2,16 +2,54 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function requestEmail() {
+      return isSignedIn() && request.auth.token.email != null
+        ? request.auth.token.email
+        : '';
+    }
+
+    function isApprovedUser() {
+      return requestEmail() != ''
+        && exists(/databases/$(database)/documents/allowedUsers/$(requestEmail()))
+        && get(/databases/$(database)/documents/allowedUsers/$(requestEmail())).data.approved == true;
+    }
+
+    function isBootstrapApprovedEmail() {
+      return requestEmail() == 'jedidjacto@gmail.com'
+        || requestEmail() == 'stancydesigns@gmail.com'
+        || requestEmail() == 'mekerekaura.com@gmail.com';
+    }
+
+    match /allowedUsers/{emailId} {
+      allow read: if requestEmail() != ''
+        && emailId == requestEmail();
+
+      allow create: if requestEmail() != ''
+        && emailId == requestEmail()
+        && isBootstrapApprovedEmail()
+        && request.resource.data.email == requestEmail()
+        && request.resource.data.approved == true;
+
+      allow update, delete: if false;
+    }
+
     match /userProfiles/{userId} {
-      allow create, read, update, delete: if request.auth != null
+      allow create, read, update, delete: if isSignedIn()
+        && isApprovedUser()
         && request.auth.uid == userId;
     }
 
     match /scenarios/{scenarioId} {
-      allow create: if request.auth != null
+      allow create: if isSignedIn()
+        && isApprovedUser()
         && request.resource.data.userId == request.auth.uid;
 
-      allow read, update, delete: if request.auth != null
+      allow read, update, delete: if isSignedIn()
+        && isApprovedUser()
         && resource.data.userId == request.auth.uid;
     }
   }

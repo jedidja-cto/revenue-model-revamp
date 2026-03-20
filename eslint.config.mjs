@@ -6,6 +6,25 @@ export default tseslint.config(
     ignores: ['**/dist/**', '**/node_modules/**'],
   },
   js.configs.recommended,
+  {
+    files: ['hosting/**/*.js'],
+    languageOptions: {
+      globals: {
+        alert: 'readonly',
+        Blob: 'readonly',
+        console: 'readonly',
+        crypto: 'readonly',
+        document: 'readonly',
+        FileReader: 'readonly',
+        HTMLElement: 'readonly',
+        HTMLInputElement: 'readonly',
+        HTMLSelectElement: 'readonly',
+        URL: 'readonly',
+        window: 'readonly',
+      },
+      sourceType: 'module',
+    },
+  },
   ...tseslint.configs.recommended,
   {
     files: ['**/*.ts'],

@@ -1,33 +1,47 @@
 # Roadmap
 
-## Phase 1: Repository Foundation
+## Completed Foundation
 
-- Establish the monorepo structure
-- Add baseline documentation
-- Create configuration scaffolding
-- Introduce the simulation engine package skeleton
-- Set up linting, formatting, and CI validation
+- Monorepo structure
+- Shared data models
+- Simulation engine
+- Metrics, break-even, and projection logic
+- Growth, cashflow, tax, and depreciation logic
+- Browser-hosted Firebase MVP
+- CLI scenario tooling
 
-## Phase 2: Data Models and Core Domain Shapes
+## Current MVP Focus
 
-- Define shared TypeScript types and schemas
-- Introduce core financial input and output models
-- Formalize business rule loading patterns
+- Improve usability and clarity
+- Tighten scenario workflows
+- Make the product easier for non-technical users
+- Keep deployment simple on Firebase Spark
 
-## Phase 3: Simulation Engine Implementation
+## Next Product Opportunities
 
-- Add revenue, cost, and profit calculations
-- Implement projection logic
-- Add unit tests around financial scenarios
+### Better Business Templates
 
-## Phase 4: Application Surfaces
+- starter templates for retail
+- starter templates for SaaS
+- starter templates for services
+- vertical-specific templates such as fiber or infrastructure businesses
 
-- Scaffold the web application experience
-- Scaffold the backend API service
-- Connect applications to shared packages
+### Better Reporting
 
-## Phase 5: Usability and Extension
+- compare multiple scenarios side by side
+- highlight risk changes automatically
+- show key business warnings earlier
 
-- Improve scenario management and reporting
-- Expand configuration depth
-- Prepare deployment and operational workflows
+### Better Collaboration
+
+- named workspaces
+- team sharing
+- scenario comments
+- approval flows for decision-makers
+
+### Better Business Intelligence
+
+- stronger break-even insights
+- pricing suggestions
+- subscriber or customer growth modeling
+- simpler forecasting for operators

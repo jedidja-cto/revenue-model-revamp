@@ -1,57 +1,150 @@
 # Revenue Model Revamp
 
-## Overview
+![Firebase Hosting](https://img.shields.io/badge/Firebase-Hosting-orange)
+![Firestore](https://img.shields.io/badge/Firebase-Firestore-yellow)
+![Firebase Auth](https://img.shields.io/badge/Auth-Firebase-blue)
+![TypeScript](https://img.shields.io/badge/TypeScript-Ready-3178C6)
+![pnpm](https://img.shields.io/badge/Package_Manager-pnpm-F69220)
+![Spark MVP](https://img.shields.io/badge/Stage-Spark_MVP-2C2C2A)
 
-Revenue Model Revamp is a simulation tool for small and medium businesses that need a clearer view of how pricing, sales volume, costs, and operating expenses affect profitability.
+## What This Is
 
-## Problem
+Revenue Model Revamp is a browser-based business simulation tool.
 
-Many SMEs make pricing and growth decisions without a simple way to test how changing costs, sales assumptions, or overhead will affect monthly and annual performance. This often leads to reactive decision-making and limited financial visibility.
+It helps a founder, operator, or business owner answer a simple but painful question:
 
-## Solution
+**"If I change my prices, costs, sales volume, or monthly expenses, what actually happens to my business?"**
 
-This project will provide a structured simulation platform where business owners can model revenue, cost, and profit scenarios before making operational decisions. The Phase 1 repository focuses on clean scaffolding so future phases can add data models, business rules, and application features safely.
+Instead of guessing, the app lets a user enter:
 
-## Repository Structure
+- what they sell
+- how much it costs to deliver
+- how much they charge
+- how many units they expect to sell
+- what their monthly operating costs are
+- what kind of demand, price, or cost changes they expect over time
+
+Then it shows the numbers that matter:
+
+- revenue
+- gross profit
+- net profit
+- tax impact
+- break-even point
+- monthly projections
+- cashflow trends
+- runway
+
+## Why It Matters
+
+Many small businesses and early-stage founders do not fail because they lack effort.
+They fail because they make important decisions with weak financial visibility.
+
+Common examples:
+
+- pricing is too low
+- costs rise faster than expected
+- demand grows more slowly than planned
+- operating expenses are heavier than they look
+- cashflow pressure shows up too late
+
+This project exists to make those risks visible earlier, in a simple and practical way.
+
+## Who It Is For
+
+This MVP is useful for people who need quick business scenario planning without building a complex spreadsheet first.
+
+Good fits include:
+
+- startup founders
+- small business owners
+- operators running retail or service businesses
+- teams with recurring revenue models
+- businesses with meaningful monthly overhead
+- infrastructure or fiber businesses that need to model subscriber growth, equipment cost, and runway
+
+## What The MVP Does Today
+
+The current app is a Spark-plan Firebase MVP that runs fully in the browser.
+
+Users can:
+
+- sign in with Google
+- sign in with email and password
+- sign in with a magic link
+- sign in with phone verification
+- build a business scenario in a step-by-step wizard
+- run the shared simulation engine in the browser
+- save results to Firestore
+- review saved scenarios
+- download a CSV of saved results
+
+## Tech Stack
+
+- Firebase Hosting
+- Firebase Auth
+- Firestore
+- TypeScript
+- pnpm workspace monorepo
+- Shared simulation engine package
+- Vanilla HTML, CSS, and JavaScript for the hosted UI
+- Chart.js for results visualization
+
+## Product Structure
 
 ```text
 revenue-model-revamp/
-|-- apps/
-|   |-- api/
-|   `-- web/
-|-- config/
-|   `-- business-rules.yaml
-|-- docs/
-|   |-- architecture.md
-|   |-- product-spec.md
-|   |-- roadmap.md
-|   `-- simulation-model.md
+|-- hosting/                     # Browser UI deployed to Firebase Hosting
 |-- packages/
-|   |-- data-models/
-|   |-- simulation-engine/
-|   `-- ui-components/
-|-- scripts/
-|   `-- dev-tools/
-|-- .github/
-|   `-- workflows/
-|-- CHANGELOG.md
-|-- README.md
+|   |-- simulation-engine/       # Shared business calculation engine
+|   |-- data-models/             # Shared interfaces and data shapes
+|   `-- cli/                     # Local batch runner and scenario tooling
+|-- docs/                        # Product, architecture, and deployment docs
+|-- scripts/                     # Build helpers
+|-- firebase.json                # Hosting + Firestore config
+|-- firestore.rules              # Firestore access rules
 `-- package.json
 ```
 
-## Development Setup
+## Local Development
 
 1. Install Node.js 20 or later.
-2. Install `pnpm` if it is not already available.
-3. Run `pnpm install` from the repository root.
-4. Use `pnpm lint` to validate code quality.
-5. Use `pnpm typecheck` to verify the TypeScript package scaffold.
-6. Use `pnpm build` to build the placeholder simulation engine package.
+2. Install dependencies:
+   - `pnpm install`
+3. Run checks:
+   - `pnpm lint`
+   - `pnpm typecheck`
+4. Build the workspace and browser bundle:
+   - `pnpm build`
 
-## Roadmap
+## Firebase Setup
 
-Planned phases are documented in [docs/roadmap.md](./docs/roadmap.md).
+1. Select the project:
+   - `firebase use revenue-model-revamp`
+2. Make sure these Firebase products are enabled:
+   - Firestore Database
+   - Authentication
+3. Make sure these sign-in methods are enabled:
+   - Google
+   - Email/Password
+   - Email Link
+   - Phone
+4. Deploy:
+   - `firebase deploy --only hosting,firestore`
+
+## Documentation
+
+- [Architecture](./docs/architecture.md)
+- [Product Spec](./docs/product-spec.md)
+- [Firebase MVP](./docs/firebase-mvp.md)
+- [Roadmap](./docs/roadmap.md)
+
+## Notes
+
+- The current product is a browser-first MVP, not a full finance platform yet.
+- The simulation engine and CLI remain available for local and technical use.
+- Older Firebase Functions experiments are intentionally kept out of the active Spark deployment path.
 
 ## Versioning
 
-This repository uses semantic versioning. Phase 1 is released as `v0.1.0` and represents repository scaffolding only.
+The simulation engine has been implemented through `v0.8.0`, and the current repository includes the hosted Spark MVP on top of that foundation.

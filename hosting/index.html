@@ -1,0 +1,416 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Revenue Model Revamp</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="./firebase-config.js"></script>
+    <script type="module" src="./app.js"></script>
+  </head>
+  <body>
+    <section id="auth-screen" class="auth-screen">
+      <article class="auth-card-shell" aria-labelledby="auth-heading">
+        <div class="auth-branding">
+          <span class="brand-mark" aria-hidden="true"></span>
+          <p class="auth-kicker">REVENUE MODEL REVAMP</p>
+        </div>
+        <h1 id="auth-heading">Welcome back</h1>
+        <p class="auth-subtitle">Sign in to save and manage your scenarios</p>
+
+        <button id="google-button" type="button" class="button button-primary button-google">
+          <span class="google-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" role="img" aria-hidden="true">
+              <path
+                fill="#4285F4"
+                d="M21.6 12.23c0-.72-.06-1.25-.19-1.8H12v3.4h5.53c-.11.85-.72 2.13-2.08 2.99l-.02.11 3.02 2.34.21.02c1.91-1.76 2.94-4.35 2.94-7.06Z"
+              />
+              <path
+                fill="#34A853"
+                d="M12 22c2.7 0 4.97-.89 6.63-2.42l-3.16-2.47c-.84.58-1.97.99-3.47.99-2.64 0-4.87-1.74-5.67-4.15l-.1.01-3.14 2.43-.03.1C4.71 19.78 8.07 22 12 22Z"
+              />
+              <path
+                fill="#FBBC05"
+                d="M6.33 13.95A5.98 5.98 0 0 1 6 12c0-.68.12-1.34.32-1.95l-.01-.13-3.17-2.46-.1.04A9.98 9.98 0 0 0 2 12c0 1.6.38 3.1 1.05 4.42l3.28-2.47Z"
+              />
+              <path
+                fill="#EA4335"
+                d="M12 5.9c1.89 0 3.17.81 3.9 1.49l2.85-2.78C16.96 2.95 14.7 2 12 2 8.07 2 4.71 4.22 3.04 7.58l3.28 2.47C7.13 7.64 9.36 5.9 12 5.9Z"
+              />
+            </svg>
+          </span>
+          Continue with Google
+        </button>
+
+        <div class="divider" aria-hidden="true">
+          <span>or</span>
+        </div>
+
+        <button
+          id="toggle-email-auth"
+          type="button"
+          class="button button-secondary"
+          aria-expanded="false"
+          aria-controls="email-auth-panel"
+        >
+          Continue with email and password
+        </button>
+        <section id="email-auth-panel" class="inline-panel" hidden>
+          <form id="email-auth-form" class="stack" novalidate>
+            <label class="field">
+              <span>Email</span>
+              <input id="email-input" type="email" autocomplete="email" required />
+              <span class="field-error" data-error-for="email-input"></span>
+            </label>
+            <label class="field">
+              <span>Password</span>
+              <input
+                id="password-input"
+                type="password"
+                autocomplete="current-password"
+                minlength="6"
+                required
+              />
+              <span class="field-error" data-error-for="password-input"></span>
+            </label>
+            <button id="login-button" type="submit" class="button button-primary">Log in</button>
+          </form>
+          <button id="signup-button" type="button" class="inline-link">
+            Create account
+          </button>
+          <div id="email-auth-feedback" class="feedback error" hidden></div>
+        </section>
+
+        <nav class="auth-alt-links" aria-label="Alternative sign-in methods">
+          <a id="toggle-phone-auth" href="#" class="text-link">
+            Sign in with phone (SMS)
+          </a>
+          <a id="toggle-magic-link" href="#" class="text-link">
+            Sign in with magic link
+          </a>
+        </nav>
+
+        <section id="phone-auth-panel" class="inline-panel" hidden>
+          <form id="phone-auth-form" class="stack" novalidate>
+            <label class="field">
+              <span>Phone number</span>
+              <input
+                id="phone-input"
+                type="tel"
+                inputmode="tel"
+                placeholder="+264812345678"
+                autocomplete="tel"
+              />
+              <span class="field-error" data-error-for="phone-input"></span>
+            </label>
+            <label class="field">
+              <span>Verification code</span>
+              <input
+                id="phone-code-input"
+                type="text"
+                inputmode="numeric"
+                placeholder="123456"
+              />
+              <span class="field-error" data-error-for="phone-code-input"></span>
+            </label>
+            <div class="button-row auth-inline-actions">
+              <button id="phone-send-button" type="button" class="button button-primary">
+                Send code
+              </button>
+              <button id="phone-verify-button" type="button" class="button button-secondary">
+                Verify code
+              </button>
+            </div>
+          </form>
+          <div id="phone-auth-feedback" class="feedback error" hidden></div>
+          <div id="phone-recaptcha-container" aria-hidden="true"></div>
+        </section>
+
+        <section id="magic-link-panel" class="inline-panel" hidden>
+          <form id="email-link-form" class="stack" novalidate>
+            <label class="field">
+              <span>Email</span>
+              <input id="email-link-input" type="email" autocomplete="email" />
+              <span class="field-error" data-error-for="email-link-input"></span>
+            </label>
+            <button id="email-link-button" type="submit" class="button button-secondary">
+              Send magic link
+            </button>
+          </form>
+          <div id="email-link-feedback" class="feedback error" hidden></div>
+        </section>
+
+        <p class="auth-credit">
+          Designed by
+          <a href="https://welwitschiadata.com" target="_blank" rel="noreferrer">
+            Welwitschia Data
+          </a>
+        </p>
+        <div id="auth-global-feedback" class="feedback feedback-neutral" hidden></div>
+      </article>
+    </section>
+
+    <section id="app-shell" class="app-shell hidden">
+      <header class="app-topbar">
+        <div class="topbar-brand">
+          <span class="brand-mark" aria-hidden="true"></span>
+          <div>
+            <p class="topbar-kicker">Revenue Model Revamp</p>
+            <h2 id="topbar-business-name">Scenario Builder</h2>
+          </div>
+        </div>
+        <div class="topbar-session">
+          <div id="auth-status" class="session-pill" aria-live="polite"></div>
+          <button id="sign-out-button" type="button" class="button button-secondary">
+            Sign out
+          </button>
+        </div>
+      </header>
+
+      <div class="wizard-progress">
+        <div class="wizard-progress-inner">
+          <p id="mobile-step-label" class="mobile-step-label"></p>
+          <ol class="step-list" aria-label="Scenario builder steps">
+            <li class="step-item" data-step="1">
+              <span class="step-circle">1</span>
+              <span class="step-label">1. Business</span>
+            </li>
+            <li class="step-connector" aria-hidden="true"></li>
+            <li class="step-item" data-step="2">
+              <span class="step-circle">2</span>
+              <span class="step-label">2. Products</span>
+            </li>
+            <li class="step-connector" aria-hidden="true"></li>
+            <li class="step-item" data-step="3">
+              <span class="step-circle">3</span>
+              <span class="step-label">3. Expenses</span>
+            </li>
+            <li class="step-connector" aria-hidden="true"></li>
+            <li class="step-item" data-step="4">
+              <span class="step-circle">4</span>
+              <span class="step-label">4. Review &amp; Run</span>
+            </li>
+          </ol>
+        </div>
+      </div>
+
+      <main class="app-content">
+        <section class="builder-shell">
+          <form id="scenario-form" novalidate>
+            <section class="builder-step active" data-step-panel="1">
+              <div class="step-header">
+                <h3>Tell us about your business</h3>
+                <p>This sets the context for your entire projection.</p>
+              </div>
+              <div class="form-grid two-column">
+                <label class="field">
+                  <span>Business name</span>
+                  <input id="business-name" placeholder="e.g. Acme Retail" required />
+                  <span class="field-error" data-error-for="business-name"></span>
+                </label>
+                <label class="field">
+                  <span>Industry</span>
+                  <select id="business-industry" required>
+                    <option value="">Select an industry</option>
+                    <option value="Retail">Retail</option>
+                    <option value="SaaS">SaaS</option>
+                    <option value="Food & Beverage">Food &amp; Beverage</option>
+                    <option value="Manufacturing">Manufacturing</option>
+                    <option value="Services">Services</option>
+                    <option value="Other">Other</option>
+                  </select>
+                  <span class="field-error" data-error-for="business-industry"></span>
+                </label>
+                <label class="field">
+                  <span>Scenario name</span>
+                  <input id="scenario-name" value="Baseline" required />
+                  <span class="field-error" data-error-for="scenario-name"></span>
+                </label>
+                <label class="field">
+                  <span>Projection period</span>
+                  <select id="projection-months" required>
+                    <option value="3">3 months</option>
+                    <option value="6">6 months</option>
+                    <option value="12" selected>12 months</option>
+                    <option value="24">24 months</option>
+                  </select>
+                  <span class="field-error" data-error-for="projection-months"></span>
+                </label>
+                <label class="field">
+                  <span>Tax rate (% of profit)</span>
+                  <input id="tax-rate" type="number" min="0" max="100" step="1" value="20" required />
+                  <small>Enter as a whole number. E.g. 20 means 20%.</small>
+                  <span class="field-error" data-error-for="tax-rate"></span>
+                </label>
+                <label class="field">
+                  <span>Expected monthly demand change (%)</span>
+                  <input id="demand-change" type="number" step="1" value="0" required />
+                  <small>Use 0 for no change, negative for decline.</small>
+                  <span class="field-error" data-error-for="demand-change"></span>
+                </label>
+                <label class="field">
+                  <span>Price change (%)</span>
+                  <input id="price-change" type="number" step="1" value="0" required />
+                  <span class="field-error" data-error-for="price-change"></span>
+                </label>
+                <label class="field">
+                  <span>Cost change (%)</span>
+                  <input id="cost-change" type="number" step="1" value="0" required />
+                  <span class="field-error" data-error-for="cost-change"></span>
+                </label>
+                <label class="field">
+                  <span>Expense change (%)</span>
+                  <input id="expense-change" type="number" step="1" value="0" required />
+                  <span class="field-error" data-error-for="expense-change"></span>
+                </label>
+              </div>
+            </section>
+
+            <section class="builder-step" data-step-panel="2">
+              <div class="step-header">
+                <h3>Add your products</h3>
+                <p>Add every product or service you sell.</p>
+              </div>
+              <div id="products-list" class="repeat-stack"></div>
+              <button id="add-product-button" type="button" class="dashed-button">
+                + Add another product
+              </button>
+            </section>
+
+            <section class="builder-step" data-step-panel="3">
+              <div class="step-header">
+                <h3>Add your expenses</h3>
+                <p>Track the operating costs that affect your monthly runway.</p>
+              </div>
+              <div id="expenses-list" class="repeat-stack"></div>
+              <button id="add-expense-button" type="button" class="dashed-button">
+                + Add another expense
+              </button>
+            </section>
+
+            <section class="builder-step" data-step-panel="4">
+              <div class="step-header">
+                <h3>Review &amp; Run</h3>
+                <p>Check your inputs before generating the projection.</p>
+              </div>
+              <div id="review-warning" class="warning-banner" hidden></div>
+              <div class="review-grid">
+                <section class="review-card">
+                  <h4>Business details</h4>
+                  <dl id="review-business" class="key-value-list"></dl>
+                </section>
+                <section class="review-card">
+                  <h4>Products</h4>
+                  <div class="table-wrap compact-table-wrap">
+                    <table class="compact-table">
+                      <thead>
+                        <tr>
+                          <th>Name</th>
+                          <th>Price</th>
+                          <th>Cost</th>
+                          <th>Units</th>
+                          <th>Margin %</th>
+                        </tr>
+                      </thead>
+                      <tbody id="review-products"></tbody>
+                    </table>
+                  </div>
+                </section>
+                <section class="review-card">
+                  <h4>Expenses</h4>
+                  <div class="table-wrap compact-table-wrap">
+                    <table class="compact-table">
+                      <thead>
+                        <tr>
+                          <th>Name</th>
+                          <th>Amount</th>
+                          <th>Fixed/Variable</th>
+                        </tr>
+                      </thead>
+                      <tbody id="review-expenses"></tbody>
+                    </table>
+                  </div>
+                </section>
+              </div>
+            </section>
+
+            <footer class="wizard-footer">
+              <button id="back-button" type="button" class="button button-secondary" hidden>
+                ← Back
+              </button>
+              <button id="next-button" type="button" class="button button-primary">
+                Next: Products →
+              </button>
+              <button id="run-simulation-button" type="submit" class="button button-accent" hidden>
+                Run simulation
+              </button>
+            </footer>
+          </form>
+          <div id="form-feedback" class="feedback feedback-neutral" role="status" aria-live="polite">
+            Complete each step to build your scenario.
+          </div>
+        </section>
+
+        <section id="results-view" class="results-view">
+          <header class="results-header">
+            <div>
+              <p id="results-scenario-name" class="results-scenario-name">No scenario yet</p>
+              <h3 id="results-business-name">Run a simulation to see your business summary</h3>
+            </div>
+            <button id="download-csv-button" type="button" class="button button-secondary" disabled>
+              Download CSV
+            </button>
+          </header>
+
+          <section class="results-section">
+            <div id="results-summary" class="summary-card-grid"></div>
+          </section>
+
+          <section class="results-section results-chart-card">
+            <div class="section-title-row">
+              <h4>Revenue vs profit by month</h4>
+            </div>
+            <div class="chart-wrap">
+              <canvas id="results-chart" aria-label="Revenue and profit chart"></canvas>
+            </div>
+          </section>
+
+          <section class="results-section">
+            <div class="section-title-row">
+              <h4>Monthly breakdown</h4>
+            </div>
+            <div class="table-wrap">
+              <table class="results-table">
+                <thead>
+                  <tr>
+                    <th>Month</th>
+                    <th>Revenue</th>
+                    <th>Profit</th>
+                    <th>Tax</th>
+                    <th>Depreciation</th>
+                    <th>Net Cashflow</th>
+                  </tr>
+                </thead>
+                <tbody id="results-table"></tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="results-section">
+            <div class="section-title-row">
+              <h4>Saved scenarios</h4>
+            </div>
+            <ul id="history-list" class="saved-scenario-list"></ul>
+          </section>
+        </section>
+      </main>
+    </section>
+  </body>
+</html>

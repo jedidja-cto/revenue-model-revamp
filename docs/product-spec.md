@@ -2,30 +2,58 @@
 
 ## Purpose
 
-Revenue Model Revamp is intended to help small and medium businesses understand how their revenue is created, where costs accumulate, and how profitability changes under different operating assumptions.
+Revenue Model Revamp helps founders and business operators understand what happens to their business when prices, sales, costs, and expenses change.
 
-## Problem Statement
+It is meant to turn rough business assumptions into visible financial outcomes.
 
-SMEs often track sales and expenses after the fact, but they lack accessible tooling for forward-looking financial simulation. Without a simple model, owners struggle to evaluate the impact of pricing changes, shifts in demand, and rising operating costs.
+## Core Problem
+
+Many business decisions are made with:
+
+- gut feel
+- messy spreadsheets
+- after-the-fact reporting
+- weak visibility into break-even and cashflow
+
+That creates risk. A business can look busy while still being fragile.
+
+## Product Goal
+
+The goal is to give users a simple way to test scenarios before they make real decisions.
+
+Examples:
+
+- What if demand drops by 10%?
+- What if costs rise by 8%?
+- What if we increase price slightly?
+- How many units do we need to break even?
+- How many months of runway do we have?
 
 ## Target Users
 
-- Small business owners
-- Medium-sized business operators
-- Founders managing pricing and cost structures
-- Finance and operations leads in growing businesses
+- startup founders
+- SME owners
+- operators in retail, services, and recurring-revenue businesses
+- decision-makers who need quick scenario planning
 
-## Core Inputs
+## Current MVP Scope
 
-- Product or service cost
-- Selling price
-- Estimated monthly sales volume
-- Operating expenses
+The hosted MVP supports:
 
-## Expected Outcomes
+- authentication
+- guided scenario entry
+- revenue and profitability simulation
+- results dashboard
+- saved scenario history
+- CSV export
 
-The system will eventually allow users to simulate revenue, cost, gross margin, and profit outcomes across projected periods so they can test scenarios before committing to business decisions.
+## Non-Goals For The Current MVP
 
-## Phase 1 Scope
+The current product does not yet aim to be:
 
-Phase 1 establishes repository structure, documentation, configuration, and tooling standards. It does not yet deliver production financial calculations or application features.
+- a full accounting platform
+- a full ERP
+- a multi-user admin dashboard
+- a replacement for formal finance systems
+
+It is a decision-support tool first.

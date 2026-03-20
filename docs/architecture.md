@@ -2,44 +2,74 @@
 
 ## Overview
 
-The repository is organized as a monorepo so frontend applications, backend services, shared packages, and project-level configuration can evolve together while remaining clearly separated.
+Revenue Model Revamp is structured as a monorepo so the simulation engine, shared data models, CLI tooling, and hosted app can evolve together without mixing concerns.
 
-## Repository Layout
+The current live experience is a browser-based MVP hosted on Firebase Hosting. The financial calculations do not run on a server. They run in the browser through the shared simulation engine bundle.
 
-- `apps/web`: placeholder for the future frontend application
-- `apps/api`: placeholder for the future backend service
-- `packages/simulation-engine`: TypeScript package for future revenue and profit calculations
-- `packages/data-models`: placeholder for shared data types and schemas
-- `packages/ui-components`: placeholder for shared interface components
-- `config`: shared configuration such as business rules and defaults
-- `docs`: foundational project and planning documentation
-- `scripts/dev-tools`: scripts reserved for local development helpers and automation
+## Main Parts
 
-## Planned System Components
+### Hosted UI
 
-### Web Application
+The user-facing app lives under `hosting/`.
 
-The future web application will provide user interfaces for capturing assumptions, running simulations, and presenting financial outcomes.
+It handles:
 
-### API Service
+- user authentication
+- scenario input
+- step-by-step validation
+- running the simulation
+- showing charts and results
+- saving scenarios to Firestore
+- reopening previous scenarios
+- CSV export
 
-The future API service will support persistence, orchestration, and integration points for the simulation workflows.
+### Simulation Engine
 
-### Shared Packages
+The main business logic lives in `packages/simulation-engine`.
 
-Shared packages will isolate domain logic, data contracts, and interface elements so each application can reuse consistent building blocks.
+It handles:
 
-## Development Standards
+- revenue calculations
+- cost calculations
+- gross and net profit
+- tax handling
+- break-even analysis
+- monthly projections
+- growth and cashflow calculations
 
-- `pnpm` manages workspaces and dependency installation
-- TypeScript is the baseline language for shared packages
-- ESLint enforces code quality expectations
-- Prettier maintains formatting consistency
-- GitHub Actions validates the scaffold through linting, type-checking, and build steps
+This logic is shared between the hosted app and the CLI.
+
+### Data Models
+
+Shared interfaces live in `packages/data-models`.
+
+These define the main shapes used across the project:
+
+- business
+- product
+- expense
+- scenario
+
+### CLI
+
+The CLI lives in `packages/cli`.
+
+It is useful for local scenario testing, batch runs, and CSV output without using the browser app.
+
+## Firebase Usage
+
+The Spark MVP uses:
+
+- Firebase Hosting
+- Firebase Auth
+- Firestore
+
+It does **not** depend on Cloud Functions for the core flow.
 
 ## Design Principles
 
-- Keep business logic inside reusable packages instead of application shells
-- Centralize configurable business rules under `config/`
-- Document structure and intent early to support phased delivery
-- Prefer lightweight tooling until additional complexity is justified
+- Keep financial logic outside the UI
+- Keep hosted app code simple and browser-safe
+- Reuse the same engine in both the UI and CLI
+- Keep the MVP small enough to move quickly
+- Make the app understandable for non-technical business users

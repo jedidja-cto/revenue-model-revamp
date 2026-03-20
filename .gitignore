@@ -3,5 +3,11 @@ dist/
 coverage/
 .pnpm-store/
 *.tsbuildinfo
+.firebase/
+firebase-debug.log
+functions/
+storage.rules
+.env
+.env.*
 .DS_Store
 Thumbs.db

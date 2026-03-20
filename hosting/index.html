@@ -207,18 +207,18 @@
             <section class="builder-step active" data-step-panel="1">
               <div class="step-header">
                 <h3>Tell us about your business</h3>
-                <p>This sets the context for your entire projection.</p>
+                <p>These details help us model how your business performs over time.</p>
               </div>
               <div class="form-grid two-column">
                 <label class="field">
-                  <span>Business name</span>
+                  <span>What is your business called?</span>
                   <input id="business-name" placeholder="e.g. Acme Retail" required />
                   <span class="field-error" data-error-for="business-name"></span>
                 </label>
                 <label class="field">
-                  <span>Industry</span>
+                  <span>What kind of business is it?</span>
                   <select id="business-industry" required>
-                    <option value="">Select an industry</option>
+                    <option value="">Choose a business type</option>
                     <option value="Retail">Retail</option>
                     <option value="SaaS">SaaS</option>
                     <option value="Food & Beverage">Food &amp; Beverage</option>
@@ -229,12 +229,13 @@
                   <span class="field-error" data-error-for="business-industry"></span>
                 </label>
                 <label class="field">
-                  <span>Scenario name</span>
+                  <span>Name this plan</span>
                   <input id="scenario-name" value="Baseline" required />
+                  <small>Example: Baseline, Growth Plan, or Price Increase.</small>
                   <span class="field-error" data-error-for="scenario-name"></span>
                 </label>
                 <label class="field">
-                  <span>Projection period</span>
+                  <span>How far ahead do you want to plan?</span>
                   <select id="projection-months" required>
                     <option value="3">3 months</option>
                     <option value="6">6 months</option>
@@ -244,30 +245,33 @@
                   <span class="field-error" data-error-for="projection-months"></span>
                 </label>
                 <label class="field">
-                  <span>Tax rate (% of profit)</span>
+                  <span>How much of your profit usually goes to tax? (%)</span>
                   <input id="tax-rate" type="number" min="0" max="100" step="1" value="20" required />
                   <small>Enter as a whole number. E.g. 20 means 20%.</small>
                   <span class="field-error" data-error-for="tax-rate"></span>
                 </label>
                 <label class="field">
-                  <span>Expected monthly demand change (%)</span>
+                  <span>Do you expect sales to go up or down each month? (%)</span>
                   <input id="demand-change" type="number" step="1" value="0" required />
                   <small>Use 0 for no change, negative for decline.</small>
                   <span class="field-error" data-error-for="demand-change"></span>
                 </label>
                 <label class="field">
-                  <span>Price change (%)</span>
+                  <span>Will your selling price change? (%)</span>
                   <input id="price-change" type="number" step="1" value="0" required />
+                  <small>Use 0 if you plan to keep prices the same.</small>
                   <span class="field-error" data-error-for="price-change"></span>
                 </label>
                 <label class="field">
-                  <span>Cost change (%)</span>
+                  <span>Will your product or service cost change? (%)</span>
                   <input id="cost-change" type="number" step="1" value="0" required />
+                  <small>This is the cost to deliver what you sell.</small>
                   <span class="field-error" data-error-for="cost-change"></span>
                 </label>
                 <label class="field">
-                  <span>Expense change (%)</span>
+                  <span>Will your monthly business expenses change? (%)</span>
                   <input id="expense-change" type="number" step="1" value="0" required />
+                  <small>Examples: rent, staff, transport, software.</small>
                   <span class="field-error" data-error-for="expense-change"></span>
                 </label>
               </div>
@@ -275,19 +279,19 @@
 
             <section class="builder-step" data-step-panel="2">
               <div class="step-header">
-                <h3>Add your products</h3>
-                <p>Add every product or service you sell.</p>
+                <h3>Add what you sell</h3>
+                <p>Add each product or service your business makes money from.</p>
               </div>
               <div id="products-list" class="repeat-stack"></div>
               <button id="add-product-button" type="button" class="dashed-button">
-                + Add another product
+                + Add another item
               </button>
             </section>
 
             <section class="builder-step" data-step-panel="3">
               <div class="step-header">
-                <h3>Add your expenses</h3>
-                <p>Track the operating costs that affect your monthly runway.</p>
+                <h3>Add your monthly business costs</h3>
+                <p>Add the regular costs that affect your profit and cashflow.</p>
               </div>
               <div id="expenses-list" class="repeat-stack"></div>
               <button id="add-expense-button" type="button" class="dashed-button">
@@ -298,7 +302,7 @@
             <section class="builder-step" data-step-panel="4">
               <div class="step-header">
                 <h3>Review &amp; Run</h3>
-                <p>Check your inputs before generating the projection.</p>
+                <p>Check everything first, then run the simulation.</p>
               </div>
               <div id="review-warning" class="warning-banner" hidden></div>
               <div class="review-grid">
@@ -307,16 +311,16 @@
                   <dl id="review-business" class="key-value-list"></dl>
                 </section>
                 <section class="review-card">
-                  <h4>Products</h4>
+                  <h4>What you sell</h4>
                   <div class="table-wrap compact-table-wrap">
                     <table class="compact-table">
                       <thead>
                         <tr>
-                          <th>Name</th>
-                          <th>Price</th>
-                          <th>Cost</th>
-                          <th>Units</th>
-                          <th>Margin %</th>
+                          <th>Item</th>
+                          <th>Customer price</th>
+                          <th>Your cost</th>
+                          <th>Monthly sales</th>
+                          <th>Profit margin %</th>
                         </tr>
                       </thead>
                       <tbody id="review-products"></tbody>
@@ -324,14 +328,14 @@
                   </div>
                 </section>
                 <section class="review-card">
-                  <h4>Expenses</h4>
+                  <h4>Monthly business costs</h4>
                   <div class="table-wrap compact-table-wrap">
                     <table class="compact-table">
                       <thead>
                         <tr>
-                          <th>Name</th>
-                          <th>Amount</th>
-                          <th>Fixed/Variable</th>
+                          <th>Cost</th>
+                          <th>Monthly amount</th>
+                          <th>Fixed or variable</th>
                         </tr>
                       </thead>
                       <tbody id="review-expenses"></tbody>

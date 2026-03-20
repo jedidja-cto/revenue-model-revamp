@@ -332,32 +332,32 @@ function createProductCard(data = {}) {
   wrapper.dataset.entryType = 'product';
   wrapper.innerHTML = `
     <div class="entry-card-header">
-      <h4 class="entry-card-title">${escapeHtml(data.name || 'Product')}</h4>
+      <h4 class="entry-card-title">${escapeHtml(data.name || 'Item')}</h4>
       <button type="button" class="remove-link">Remove</button>
     </div>
     <div class="entry-grid">
       <label class="field">
-        <span>Product name</span>
+        <span>What are you selling?</span>
         <input data-role="product-name" value="${escapeHtml(data.name || '')}" />
         <span class="field-error"></span>
       </label>
       <label class="field">
-        <span>Selling price (N$)</span>
+        <span>How much does the customer pay? (N$)</span>
         <input data-role="product-selling-price" type="number" min="0" step="0.01" value="${escapeHtml(data.sellingPrice ?? '')}" />
         <span class="field-error"></span>
       </label>
       <label class="field">
-        <span>Cost price (N$)</span>
+        <span>How much does it cost you to provide it? (N$)</span>
         <input data-role="product-cost-price" type="number" min="0" step="0.01" value="${escapeHtml(data.costPrice ?? '')}" />
         <span class="field-error"></span>
       </label>
       <label class="field">
-        <span>Estimated monthly units</span>
+        <span>How many do you expect to sell each month?</span>
         <input data-role="product-units" type="number" min="0" step="1" value="${escapeHtml(data.estimatedMonthlyUnits ?? '')}" />
         <span class="field-error"></span>
       </label>
       <label class="field">
-        <span>Category</span>
+        <span>What type of item is this?</span>
         <select data-role="product-category">
           <option value="">Select category</option>
           ${createOptionMarkup(PRODUCT_CATEGORY_OPTIONS, data.category || '')}
@@ -381,17 +381,17 @@ function createExpenseCard(data = {}) {
   wrapper.dataset.fixed = String(data.fixed ?? true);
   wrapper.innerHTML = `
     <div class="entry-card-header">
-      <h4 class="entry-card-title">${escapeHtml(data.name || 'Expense')}</h4>
+      <h4 class="entry-card-title">${escapeHtml(data.name || 'Business cost')}</h4>
       <button type="button" class="remove-link">Remove</button>
     </div>
     <div class="entry-grid">
       <label class="field">
-        <span>Expense name</span>
+        <span>What is this monthly cost?</span>
         <input data-role="expense-name" value="${escapeHtml(data.name || '')}" />
         <span class="field-error"></span>
       </label>
       <label class="field">
-        <span>Category</span>
+        <span>What type of cost is it?</span>
         <select data-role="expense-category">
           <option value="">Select category</option>
           ${createOptionMarkup(EXPENSE_CATEGORY_OPTIONS, data.category || '')}
@@ -399,12 +399,12 @@ function createExpenseCard(data = {}) {
         <span class="field-error"></span>
       </label>
       <label class="field">
-        <span>Monthly amount (N$)</span>
+        <span>How much does it cost each month? (N$)</span>
         <input data-role="expense-amount" type="number" min="0" step="0.01" value="${escapeHtml(data.amountMonthly ?? '')}" />
         <span class="field-error"></span>
       </label>
       <div class="field">
-        <span>Fixed expense</span>
+        <span>Is this cost fixed every month?</span>
         <div class="toggle-row" role="group" aria-label="Fixed expense">
           <button type="button" class="toggle-pill ${data.fixed !== false ? 'active' : ''}" data-toggle-value="true">Yes</button>
           <button type="button" class="toggle-pill ${data.fixed === false ? 'active' : ''}" data-toggle-value="false">No</button>
@@ -545,12 +545,12 @@ function updateReview() {
   const products = collectProducts();
   const expenses = collectExpenses();
   reviewBusiness.innerHTML = `
-    <div><dt>Business name</dt><dd>${escapeHtml(businessNameInput.value || '—')}</dd></div>
-    <div><dt>Industry</dt><dd>${escapeHtml(businessIndustryInput.value || '—')}</dd></div>
-    <div><dt>Scenario</dt><dd>${escapeHtml(scenarioNameInput.value || '—')}</dd></div>
-    <div><dt>Projection period</dt><dd>${escapeHtml(projectionMonthsInput.options[projectionMonthsInput.selectedIndex]?.text || '—')}</dd></div>
+    <div><dt>Business name</dt><dd>${escapeHtml(businessNameInput.value || '-')}</dd></div>
+    <div><dt>Business type</dt><dd>${escapeHtml(businessIndustryInput.value || '-')}</dd></div>
+    <div><dt>Plan name</dt><dd>${escapeHtml(scenarioNameInput.value || '-')}</dd></div>
+    <div><dt>Planning period</dt><dd>${escapeHtml(projectionMonthsInput.options[projectionMonthsInput.selectedIndex]?.text || '-')}</dd></div>
     <div><dt>Tax rate</dt><dd>${escapeHtml(formatPercent(taxRateInput.value || 0))}</dd></div>
-    <div><dt>Demand change</dt><dd>${escapeHtml(formatPercent(demandChangeInput.value || 0))}</dd></div>
+    <div><dt>Monthly sales change</dt><dd>${escapeHtml(formatPercent(demandChangeInput.value || 0))}</dd></div>
   `;
 
   reviewProducts.innerHTML = products

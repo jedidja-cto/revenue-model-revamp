@@ -23,6 +23,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Limited the `Run simulation` CTA to the `Review & Run` step only
 - Added a `Run another scenario` action from the results view so users can jump back to the business step
 - Renamed exported CSV files to include the active business name, scenario name, and a unique timestamp suffix
+- Added a signed-in header home action that clears the builder and returns users to a fresh business step
+- Improved CSV export naming so downloads fall back to the current saved-scenario context instead of a generic filename
 - Added optional configurable feedback links in the hosted UI for WhatsApp or form-based tester feedback
 - Added first-run onboarding for signed-in users with profile questions stored in Firestore
 - Switched the signed-in header status to greet users by their stored onboarding name

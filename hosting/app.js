@@ -64,6 +64,7 @@ const AUTH_ERROR_MESSAGES = {
 
 const authScreen = document.querySelector('#auth-screen');
 const appShell = document.querySelector('#app-shell');
+const topbarHomeButton = document.querySelector('#topbar-home-button');
 const topbarBusinessName = document.querySelector('#topbar-business-name');
 const authStatus = document.querySelector('#auth-status');
 const signOutButton = document.querySelector('#sign-out-button');
@@ -195,10 +196,25 @@ function formatTimestamp(value) {
 }
 
 function buildCsvFileName() {
-  const businessName = slugify(activeScenarioContext?.businessName || 'revenue-model');
-  const scenarioName = slugify(activeScenarioContext?.scenarioName || 'scenario-report');
-  const uniqueSuffix = Date.now();
-  return `${businessName}-${scenarioName}-${uniqueSuffix}.csv`;
+  const context =
+    activeScenarioContext ||
+    (currentRows[0]
+      ? {
+          businessName: currentRows[0].businessName || currentRows[0].input?.business?.name,
+          scenarioName: currentRows[0].input?.scenario?.name,
+        }
+      : null);
+
+  const businessName = slugify(context?.businessName || 'revenue-model');
+  const scenarioName = slugify(context?.scenarioName || 'scenario-report');
+  const timestamp = new Date()
+    .toISOString()
+    .replaceAll(':', '')
+    .replaceAll('-', '')
+    .replace(/\.\d{3}Z$/, 'Z')
+    .replace('T', '-');
+
+  return `${businessName}-${scenarioName}-${timestamp}.csv`;
 }
 
 function getNormalizedUserEmail(user = auth.currentUser) {
@@ -733,6 +749,17 @@ function resetScenarioBuilder() {
   updateReview();
   clearResultsDisplay();
   goToStep(1);
+}
+
+function returnToBusinessHome() {
+  resetScenarioBuilder();
+  businessNameInput.focus();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  setFeedback(
+    formFeedback,
+    'Start a fresh scenario below whenever you are ready to test a new idea.',
+    'neutral',
+  );
 }
 
 function hideSignedInContent() {
@@ -1372,6 +1399,7 @@ onboardingForm.addEventListener('submit', async (event) => {
 
 downloadCsvButton.addEventListener('click', downloadCsv);
 runAnotherScenarioButton.addEventListener('click', resetBuilderForNewScenario);
+topbarHomeButton.addEventListener('click', returnToBusinessHome);
 
 historyList.addEventListener('click', (event) => {
   const trigger = event.target.closest('[data-scenario-id]');

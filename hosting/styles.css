@@ -302,6 +302,19 @@ select:focus-visible {
   gap: 10px;
 }
 
+.topbar-home-button {
+  border: 0;
+  background: none;
+  padding: 0;
+  color: inherit;
+  text-align: left;
+}
+
+.topbar-home-button:hover .topbar-kicker,
+.topbar-home-button:hover #topbar-business-name {
+  color: var(--color-accent);
+}
+
 .brand-mark {
   width: 10px;
   height: 10px;

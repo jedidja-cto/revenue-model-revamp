@@ -904,6 +904,28 @@ select {
   padding: 20px;
 }
 
+.history-shell {
+  display: grid;
+  gap: 10px;
+}
+
+.history-header {
+  justify-content: flex-start;
+}
+
+.history-kicker {
+  margin: 0 0 4px;
+  color: var(--color-muted);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.history-subtitle {
+  margin: 0;
+  color: var(--color-muted);
+}
+
 .summary-card-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -943,6 +965,7 @@ select {
   list-style: none;
   margin: 0;
   padding: 0;
+  border-top: 1px solid var(--color-border);
 }
 
 .saved-scenario-item + .saved-scenario-item {

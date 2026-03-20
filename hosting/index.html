@@ -250,6 +250,75 @@
         </div>
       </header>
 
+      <section id="onboarding-shell" class="onboarding-shell hidden">
+        <div class="onboarding-card">
+          <div class="step-header">
+            <h3>Before we start, tell us a bit about you</h3>
+            <p>
+              This helps us personalize the app and understand who is using it. Your answers are stored in
+              your Firebase project under a user profile record.
+            </p>
+          </div>
+
+          <form id="onboarding-form" class="stack" novalidate>
+            <div class="form-grid two-column">
+              <label class="field">
+                <span>What is your name?</span>
+                <input id="onboarding-name" placeholder="e.g. Jedidja Kakuva" required />
+                <span class="field-error" data-error-for="onboarding-name"></span>
+              </label>
+
+              <label class="field">
+                <span>What is your role?</span>
+                <select id="onboarding-role" required>
+                  <option value="">Choose your role</option>
+                  <option value="Founder">Founder</option>
+                  <option value="Operator">Operator</option>
+                  <option value="Business Owner">Business Owner</option>
+                  <option value="Finance Lead">Finance Lead</option>
+                  <option value="Other">Other</option>
+                </select>
+                <span class="field-error" data-error-for="onboarding-role"></span>
+              </label>
+
+              <label class="field">
+                <span>What industry do you work in?</span>
+                <select id="onboarding-industry" required>
+                  <option value="">Choose an industry</option>
+                  <option value="Retail">Retail</option>
+                  <option value="SaaS">SaaS</option>
+                  <option value="Food & Beverage">Food &amp; Beverage</option>
+                  <option value="Manufacturing">Manufacturing</option>
+                  <option value="Services">Services</option>
+                  <option value="Telecoms / Fiber">Telecoms / Fiber</option>
+                  <option value="Other">Other</option>
+                </select>
+                <span class="field-error" data-error-for="onboarding-industry"></span>
+              </label>
+
+              <label class="field">
+                <span>How do you currently track your finances?</span>
+                <select id="onboarding-finance-tracking" required>
+                  <option value="">Choose a method</option>
+                  <option value="Spreadsheet">Spreadsheet</option>
+                  <option value="Accounting software">Accounting software</option>
+                  <option value="Bank statements only">Bank statements only</option>
+                  <option value="Bookkeeper or accountant">Bookkeeper or accountant</option>
+                  <option value="Mostly in my head">Mostly in my head</option>
+                  <option value="Other">Other</option>
+                </select>
+                <span class="field-error" data-error-for="onboarding-finance-tracking"></span>
+              </label>
+            </div>
+
+            <button id="onboarding-submit-button" type="submit" class="button button-primary">
+              Save and continue
+            </button>
+            <div id="onboarding-feedback" class="feedback feedback-neutral" hidden></div>
+          </form>
+        </div>
+      </section>
+
       <div class="wizard-progress">
         <div class="wizard-progress-inner">
           <p id="mobile-step-label" class="mobile-step-label"></p>

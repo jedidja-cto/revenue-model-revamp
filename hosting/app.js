@@ -14,9 +14,12 @@ import {
 import {
   addDoc,
   collection,
+  doc,
+  getDoc,
   getDocs,
   query,
   serverTimestamp,
+  setDoc,
   where,
 } from 'https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js';
 import { runSimulation } from './simulation-engine.browser.js';
@@ -64,6 +67,14 @@ const appShell = document.querySelector('#app-shell');
 const topbarBusinessName = document.querySelector('#topbar-business-name');
 const authStatus = document.querySelector('#auth-status');
 const signOutButton = document.querySelector('#sign-out-button');
+const onboardingShell = document.querySelector('#onboarding-shell');
+const onboardingForm = document.querySelector('#onboarding-form');
+const onboardingNameInput = document.querySelector('#onboarding-name');
+const onboardingRoleInput = document.querySelector('#onboarding-role');
+const onboardingIndustryInput = document.querySelector('#onboarding-industry');
+const onboardingFinanceTrackingInput = document.querySelector('#onboarding-finance-tracking');
+const onboardingSubmitButton = document.querySelector('#onboarding-submit-button');
+const onboardingFeedback = document.querySelector('#onboarding-feedback');
 
 const googleButton = document.querySelector('#google-button');
 const toggleEmailAuth = document.querySelector('#toggle-email-auth');
@@ -138,6 +149,7 @@ let currentRows = [];
 let resultsChart = null;
 let hasRenderedResults = false;
 let activeScenarioContext = null;
+let currentUserProfile = null;
 
 const appUiConfig = window.APP_UI_CONFIG || {};
 
@@ -274,6 +286,14 @@ function validateStaticField(input) {
   const value = input.value.trim();
 
   switch (input.id) {
+    case 'onboarding-name':
+      return value ? '' : 'Your name is required.';
+    case 'onboarding-role':
+      return value ? '' : 'Choose your role.';
+    case 'onboarding-industry':
+      return value ? '' : 'Choose an industry.';
+    case 'onboarding-finance-tracking':
+      return value ? '' : 'Choose how you track your finances.';
     case 'business-name':
       return value ? '' : 'Business name is required.';
     case 'business-industry':
@@ -563,6 +583,16 @@ function buildScenarioInput() {
   };
 }
 
+function buildUserProfile() {
+  return {
+    userId: auth.currentUser.uid,
+    fullName: onboardingNameInput.value.trim(),
+    role: onboardingRoleInput.value,
+    industry: onboardingIndustryInput.value,
+    financeTrackingMethod: onboardingFinanceTrackingInput.value,
+  };
+}
+
 function updateReview() {
   const products = collectProducts();
   const expenses = collectExpenses();
@@ -786,6 +816,14 @@ function renderResults(input, result) {
   renderResultsTable(result);
 }
 
+function applyUserProfile(profile) {
+  currentUserProfile = profile;
+  onboardingNameInput.value = profile?.fullName || '';
+  onboardingRoleInput.value = profile?.role || '';
+  onboardingIndustryInput.value = profile?.industry || '';
+  onboardingFinanceTrackingInput.value = profile?.financeTrackingMethod || '';
+}
+
 function renderHistory(rows) {
   currentRows = rows;
   downloadCsvButton.disabled = rows.length === 0;
@@ -879,6 +917,28 @@ async function refreshHistory() {
   renderHistory(rows);
 }
 
+async function fetchUserProfile(userId) {
+  const snapshot = await getDoc(doc(db, 'userProfiles', userId));
+  if (!snapshot.exists()) {
+    return null;
+  }
+
+  return snapshot.data();
+}
+
+async function saveUserProfile(profile) {
+  await setDoc(
+    doc(db, 'userProfiles', auth.currentUser.uid),
+    {
+      ...profile,
+      userId: auth.currentUser.uid,
+      updatedAt: serverTimestamp(),
+      createdAt: currentUserProfile?.createdAt || serverTimestamp(),
+    },
+    { merge: true },
+  );
+}
+
 async function saveScenario(input, result) {
   await addDoc(collection(db, 'scenarios'), {
     userId: auth.currentUser.uid,
@@ -919,6 +979,32 @@ async function handleAuthAction(action, feedbackTarget, button, loadingText) {
 
 function syncBusinessName() {
   topbarBusinessName.textContent = businessNameInput.value.trim() || 'Scenario Builder';
+}
+
+function syncAuthStatus() {
+  if (currentUserProfile?.fullName) {
+    setFeedback(authStatus, `Welcome, ${currentUserProfile.fullName}`, 'neutral');
+    return;
+  }
+
+  if (!auth.currentUser) {
+    setFeedback(authStatus, '', 'neutral');
+    return;
+  }
+
+  const user = auth.currentUser;
+  const fallbackLabel =
+    user.providerData[0]?.providerId === 'google.com'
+      ? `Signed in with Google as ${user.displayName || user.email}`
+      : `Signed in as ${user.email || user.phoneNumber || 'your account'}`;
+  setFeedback(authStatus, fallbackLabel, 'neutral');
+}
+
+function syncOnboardingVisibility() {
+  const isComplete = Boolean(currentUserProfile?.fullName);
+  onboardingShell.classList.toggle('hidden', isComplete);
+  document.querySelector('.wizard-progress').classList.toggle('hidden', !isComplete);
+  document.querySelector('.app-content').classList.toggle('hidden', !isComplete);
 }
 
 function syncFeedbackLink() {
@@ -1145,6 +1231,10 @@ attachDynamicValidation(productsList);
 attachDynamicValidation(expensesList);
 
 [
+  onboardingNameInput,
+  onboardingRoleInput,
+  onboardingIndustryInput,
+  onboardingFinanceTrackingInput,
   businessNameInput,
   businessIndustryInput,
   scenarioNameInput,
@@ -1189,6 +1279,43 @@ backButton.addEventListener('click', () => {
 
 nextButton.addEventListener('click', () => {
   goToStep(currentStep + 1);
+});
+
+onboardingForm.addEventListener('submit', async (event) => {
+  event.preventDefault();
+
+  const fields = [
+    onboardingNameInput,
+    onboardingRoleInput,
+    onboardingIndustryInput,
+    onboardingFinanceTrackingInput,
+  ];
+
+  const errors = fields.map((field) => {
+    const error = validateStaticField(field);
+    setFieldError(field, error);
+    return error;
+  });
+
+  if (errors.some(Boolean)) {
+    setFeedback(onboardingFeedback, 'Please complete all onboarding questions first.', 'error');
+    return;
+  }
+
+  setButtonLoading(onboardingSubmitButton, 'Saving...', true);
+  try {
+    const profile = buildUserProfile();
+    await saveUserProfile(profile);
+    applyUserProfile(profile);
+    syncAuthStatus();
+    syncOnboardingVisibility();
+    await refreshHistory();
+    setFeedback(onboardingFeedback, '', 'neutral');
+  } catch (error) {
+    setFeedback(onboardingFeedback, error.message || 'Unable to save your details.', 'error');
+  } finally {
+    setButtonLoading(onboardingSubmitButton, 'Saving...', false);
+  }
 });
 
 downloadCsvButton.addEventListener('click', downloadCsv);
@@ -1255,20 +1382,28 @@ observeAuthState(async (user) => {
   if (!user) {
     hasRenderedResults = false;
     activeScenarioContext = null;
+    currentUserProfile = null;
     resultsView.classList.add('hidden');
+    onboardingShell.classList.add('hidden');
+    document.querySelector('.wizard-progress').classList.add('hidden');
+    document.querySelector('.app-content').classList.add('hidden');
     setFeedback(authGlobalFeedback, 'Choose a sign-in method to continue.', 'neutral');
     return;
   }
 
-  const label = user.isAnonymous
-    ? 'Guest session active'
-    : user.providerData[0]?.providerId === 'google.com'
-      ? `Signed in with Google as ${user.displayName || user.email}`
-      : `Signed in as ${user.email || user.phoneNumber || 'your account'}`;
-  setFeedback(authStatus, label, 'neutral');
+  const profile = await fetchUserProfile(user.uid);
+  applyUserProfile(profile);
+  syncAuthStatus();
+  syncOnboardingVisibility();
   setFeedback(authGlobalFeedback, '', 'neutral');
   syncBusinessName();
-  await refreshHistory();
+
+  if (profile?.fullName) {
+    await refreshHistory();
+  } else {
+    renderHistory([]);
+    onboardingNameInput.focus();
+  }
 });
 
 setupPhoneAuth('phone-send-button', true);
@@ -1278,3 +1413,6 @@ syncBusinessName();
 syncFeedbackLink();
 renderHistory([]);
 resultsView.classList.add('hidden');
+onboardingShell.classList.add('hidden');
+document.querySelector('.wizard-progress').classList.add('hidden');
+document.querySelector('.app-content').classList.add('hidden');

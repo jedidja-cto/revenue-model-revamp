@@ -2,6 +2,11 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
+    match /userProfiles/{userId} {
+      allow create, read, update, delete: if request.auth != null
+        && request.auth.uid == userId;
+    }
+
     match /scenarios/{scenarioId} {
       allow create: if request.auth != null
         && request.resource.data.userId == request.auth.uid;
@@ -11,4 +16,3 @@ service cloud.firestore {
     }
   }
 }
-

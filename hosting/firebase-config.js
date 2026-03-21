@@ -9,6 +9,7 @@ window.FIREBASE_CONFIG = {
 };
 
 window.APP_UI_CONFIG = {
+  appCheckSiteKey: '',
   feedbackUrl:
     'https://wa.me/264816457449?text=Hi%20Jedidja%2C%20I%20have%20feedback%20about%20Revenue%20Model%20Revamp.',
   feedbackLabel: 'Send feedback on WhatsApp',

@@ -62,6 +62,18 @@ const AUTH_ERROR_MESSAGES = {
   'auth/missing-phone-number': 'Enter your phone number before requesting a code.',
 };
 
+const LIMITS = {
+  maxNameLength: 100,
+  maxScenarioNameLength: 80,
+  maxSupplierLength: 100,
+  maxProducts: 25,
+  maxExpenses: 25,
+  maxCurrencyValue: 100000000,
+  maxUnits: 1000000,
+  minSaveIntervalMs: 8000,
+  maxDailySaves: 25,
+};
+
 const authScreen = document.querySelector('#auth-screen');
 const appShell = document.querySelector('#app-shell');
 const topbarHomeButton = document.querySelector('#topbar-home-button');
@@ -153,6 +165,7 @@ let resultsChart = null;
 let hasRenderedResults = false;
 let activeScenarioContext = null;
 let currentUserProfile = null;
+let lastScenarioSaveAt = 0;
 
 const appUiConfig = window.APP_UI_CONFIG || {};
 
@@ -338,12 +351,91 @@ function validateIntegerPercent(value, { min = -1000, max = 1000 } = {}) {
   return '';
 }
 
+function validateRequiredText(value, label, maxLength) {
+  if (!value) {
+    return `${label} is required.`;
+  }
+
+  if (value.length > maxLength) {
+    return `${label} must be ${maxLength} characters or fewer.`;
+  }
+
+  return '';
+}
+
+function validateBoundedNumber(value, { label = 'This field', min = 0, max = LIMITS.maxCurrencyValue } = {}) {
+  if (value === '') {
+    return 'This field is required.';
+  }
+
+  const number = Number(value);
+
+  if (!Number.isFinite(number)) {
+    return `${label} must be a valid number.`;
+  }
+
+  if (number < min) {
+    return `${label} must be ${min} or more.`;
+  }
+
+  if (number > max) {
+    return `${label} must be ${max.toLocaleString()} or less.`;
+  }
+
+  return '';
+}
+
+function getDailySaveStorageKey() {
+  const dateKey = new Date().toISOString().slice(0, 10);
+  return `revrem-saves-${dateKey}`;
+}
+
+function hasReachedDailySaveLimit() {
+  const currentCount = Number(window.localStorage.getItem(getDailySaveStorageKey()) || '0');
+  return currentCount >= LIMITS.maxDailySaves;
+}
+
+function incrementDailySaveCount() {
+  const key = getDailySaveStorageKey();
+  const currentCount = Number(window.localStorage.getItem(key) || '0');
+  window.localStorage.setItem(key, String(currentCount + 1));
+}
+
+function canSaveScenarioNow() {
+  if (Date.now() - lastScenarioSaveAt < LIMITS.minSaveIntervalMs) {
+    return `Please wait a few seconds before saving another scenario.`;
+  }
+
+  if (hasReachedDailySaveLimit()) {
+    return `You have reached today's save limit. Please come back tomorrow or export what you already have.`;
+  }
+
+  return '';
+}
+
+function rememberScenarioSave() {
+  lastScenarioSaveAt = Date.now();
+  incrementDailySaveCount();
+}
+
+function resolveScenarioResult(row) {
+  if (row.result) {
+    return row.result;
+  }
+
+  if (row.input && row.config) {
+    return runSimulation(row.input, row.config);
+  }
+
+  return null;
+}
+
 function validateStaticField(input) {
   const value = input.value.trim();
 
   switch (input.id) {
     case 'onboarding-name':
-      return value ? '' : 'Your name is required.';
+      return validateRequiredText(value, 'Your name', LIMITS.maxNameLength);
     case 'onboarding-role':
       return value ? '' : 'Choose your role.';
     case 'onboarding-industry':
@@ -351,11 +443,11 @@ function validateStaticField(input) {
     case 'onboarding-finance-tracking':
       return value ? '' : 'Choose how you track your finances.';
     case 'business-name':
-      return value ? '' : 'Business name is required.';
+      return validateRequiredText(value, 'Business name', LIMITS.maxNameLength);
     case 'business-industry':
       return value ? '' : 'Select an industry.';
     case 'scenario-name':
-      return value ? '' : 'Scenario name is required.';
+      return validateRequiredText(value, 'Scenario name', LIMITS.maxScenarioNameLength);
     case 'projection-months':
       return value ? '' : 'Choose a projection period.';
     case 'tax-rate':
@@ -364,7 +456,7 @@ function validateStaticField(input) {
     case 'price-change':
     case 'cost-change':
     case 'expense-change':
-      return validateIntegerPercent(value);
+      return validateIntegerPercent(value, { min: -100, max: 100 });
     case 'email-input':
     case 'email-link-input':
       if (!value) {
@@ -396,20 +488,41 @@ function validateDynamicField(input) {
 
   switch (role) {
     case 'product-name':
-      return value ? '' : 'Product name is required.';
+      return validateRequiredText(value, 'Product name', LIMITS.maxNameLength);
     case 'product-selling-price':
+      return validateBoundedNumber(value, {
+        label: 'Selling price',
+        min: 0,
+        max: LIMITS.maxCurrencyValue,
+      });
     case 'product-cost-price':
+      return validateBoundedNumber(value, {
+        label: 'Cost price',
+        min: 0,
+        max: LIMITS.maxCurrencyValue,
+      });
     case 'product-units':
+      return validateBoundedNumber(value, {
+        label: 'Estimated monthly units',
+        min: 0,
+        max: LIMITS.maxUnits,
+      });
     case 'expense-amount':
-      if (value === '') {
-        return 'This field is required.';
-      }
-      return Number(value) >= 0 ? '' : 'Enter 0 or more.';
+      return validateBoundedNumber(value, {
+        label: 'Monthly amount',
+        min: 0,
+        max: LIMITS.maxCurrencyValue,
+      });
     case 'product-category':
     case 'expense-category':
       return value ? '' : 'Select a category.';
     case 'expense-name':
-      return value ? '' : 'Expense name is required.';
+      return validateRequiredText(value, 'Expense name', LIMITS.maxNameLength);
+    case 'product-supplier':
+      if (value.length > LIMITS.maxSupplierLength) {
+        return `Supplier must be ${LIMITS.maxSupplierLength} characters or fewer.`;
+      }
+      return '';
     default:
       return '';
   }
@@ -531,6 +644,20 @@ function addInitialRows() {
   updateRemovableRows(expensesList);
 }
 
+function validateCollectionCounts() {
+  const issues = [];
+
+  if (productsList.children.length > LIMITS.maxProducts) {
+    issues.push(`You can add up to ${LIMITS.maxProducts} products or services.`);
+  }
+
+  if (expensesList.children.length > LIMITS.maxExpenses) {
+    issues.push(`You can add up to ${LIMITS.maxExpenses} monthly expenses.`);
+  }
+
+  return issues;
+}
+
 function collectProducts() {
   return Array.from(productsList.children).map((card, index) => ({
     id: `product-${index + 1}`,
@@ -560,6 +687,7 @@ function collectExpenses() {
 
 function getIncompleteFieldList() {
   const missing = [];
+  const collectionIssues = validateCollectionCounts();
   const staticInputs = [
     businessNameInput,
     businessIndustryInput,
@@ -596,7 +724,7 @@ function getIncompleteFieldList() {
     }
   });
 
-  return Array.from(new Set(missing));
+  return Array.from(new Set([...missing, ...collectionIssues]));
 }
 
 function buildScenarioInput() {
@@ -946,7 +1074,10 @@ function renderHistory(rows) {
 
   historyList.innerHTML = rows
     .map((row) => {
-      const netCashflow = row.result.netCashflow.reduce((sum, value) => sum + value, 0);
+      const resolvedResult = resolveScenarioResult(row);
+      const netCashflow = resolvedResult
+        ? resolvedResult.netCashflow.reduce((sum, value) => sum + value, 0)
+        : 0;
       const tone = netCashflow >= 0 ? 'positive' : 'negative';
       return `
         <li class="saved-scenario-item">
@@ -976,19 +1107,25 @@ function buildCsv(rows) {
     'netCashflow',
   ];
 
-  const body = rows.map((row) =>
-    [
+  const body = rows.map((row) => {
+    const resolvedResult = resolveScenarioResult(row);
+
+    return [
       escapeCsvCell(row.businessName),
-      escapeCsvCell(row.result.revenue),
-      escapeCsvCell(row.result.grossProfit),
-      escapeCsvCell(row.result.netProfit),
-      escapeCsvCell(row.result.cumulativeProfit.at(-1) ?? 0),
-      escapeCsvCell(row.result.runway),
-      escapeCsvCell(row.result.taxPaid.reduce((sum, value) => sum + value, 0)),
-      escapeCsvCell(row.result.depreciation.reduce((sum, value) => sum + value, 0)),
-      escapeCsvCell(row.result.netCashflow.reduce((sum, value) => sum + value, 0)),
-    ].join(','),
-  );
+      escapeCsvCell(resolvedResult?.revenue ?? 0),
+      escapeCsvCell(resolvedResult?.grossProfit ?? 0),
+      escapeCsvCell(resolvedResult?.netProfit ?? 0),
+      escapeCsvCell(resolvedResult?.cumulativeProfit.at(-1) ?? 0),
+      escapeCsvCell(resolvedResult?.runway ?? 0),
+      escapeCsvCell(resolvedResult?.taxPaid.reduce((sum, value) => sum + value, 0) ?? 0),
+      escapeCsvCell(
+        resolvedResult?.depreciation.reduce((sum, value) => sum + value, 0) ?? 0,
+      ),
+      escapeCsvCell(
+        resolvedResult?.netCashflow.reduce((sum, value) => sum + value, 0) ?? 0,
+      ),
+    ].join(',');
+  });
 
   return [header.join(','), ...body].join('\n');
 }
@@ -1043,12 +1180,13 @@ async function saveUserProfile(profile) {
   );
 }
 
-async function saveScenario(input, result) {
+async function saveScenario(input, config) {
   await addDoc(collection(db, 'scenarios'), {
     userId: auth.currentUser.uid,
     businessName: input.business.name,
+    scenarioName: input.scenario.name,
     input,
-    result,
+    config,
     createdAt: serverTimestamp(),
   });
 }
@@ -1146,11 +1284,14 @@ function attachDynamicValidation(container) {
   });
 }
 
-function populateBuilderFromInput(input, result) {
+function populateBuilderFromInput(input, config, result) {
   businessNameInput.value = input.business.name;
   businessIndustryInput.value = input.business.industry;
   scenarioNameInput.value = input.scenario.name;
-  projectionMonthsInput.value = String(result.monthlyProjection.length || 12);
+  projectionMonthsInput.value = String(config?.projectionMonths || result?.monthlyProjection.length || 12);
+  taxRateInput.value = String(
+    Number.isFinite(config?.taxRate) ? Math.round(config.taxRate * 100) : 20,
+  );
   priceChangeInput.value = String(input.scenario.priceChangePercent);
   costChangeInput.value = String(input.scenario.costChangePercent);
   demandChangeInput.value = String(input.scenario.demandChangePercent);
@@ -1288,11 +1429,27 @@ signOutButton.addEventListener('click', async () => {
 });
 
 addProductButton.addEventListener('click', () => {
+  if (productsList.children.length >= LIMITS.maxProducts) {
+    setFeedback(
+      formFeedback,
+      `You can add up to ${LIMITS.maxProducts} products or services in one scenario.`,
+      'error',
+    );
+    return;
+  }
   productsList.append(createProductCard());
   updateRemovableRows(productsList);
 });
 
 addExpenseButton.addEventListener('click', () => {
+  if (expensesList.children.length >= LIMITS.maxExpenses) {
+    setFeedback(
+      formFeedback,
+      `You can add up to ${LIMITS.maxExpenses} monthly expenses in one scenario.`,
+      'error',
+    );
+    return;
+  }
   expensesList.append(createExpenseCard());
   updateRemovableRows(expensesList);
 });
@@ -1438,8 +1595,14 @@ historyList.addEventListener('click', (event) => {
     return;
   }
 
-  populateBuilderFromInput(row.input, row.result);
-  renderResults(row.input, row.result);
+  const resolvedResult = resolveScenarioResult(row);
+  if (!resolvedResult) {
+    setFeedback(formFeedback, 'We could not reopen that saved scenario.', 'error');
+    return;
+  }
+
+  populateBuilderFromInput(row.input, row.config, resolvedResult);
+  renderResults(row.input, resolvedResult);
   goToStep(4);
   window.scrollTo({ top: 0, behavior: 'smooth' });
 });
@@ -1460,10 +1623,17 @@ scenarioForm.addEventListener('submit', async (event) => {
   }
 
   try {
+    const saveGuardMessage = canSaveScenarioNow();
+    if (saveGuardMessage) {
+      setFeedback(formFeedback, saveGuardMessage, 'error');
+      return;
+    }
+
     const { input, config } = buildScenarioInput();
     const result = runSimulation(input, config);
     renderResults(input, result);
-    await saveScenario(input, result);
+    await saveScenario(input, config);
+    rememberScenarioSave();
     await refreshHistory();
     setFeedback(formFeedback, `Simulation complete for ${input.business.name}.`, 'success');
   } catch (error) {

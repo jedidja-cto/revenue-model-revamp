@@ -2,6 +2,10 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
+    function isAdminEmail() {
+      return requestEmail() == 'jedidjacto@gmail.com';
+    }
+
     function isSignedIn() {
       return request.auth != null;
     }
@@ -13,15 +17,138 @@ service cloud.firestore {
     }
 
     function isApprovedUser() {
-      return requestEmail() != ''
+      return isAdminEmail()
+        || (
+        requestEmail() != ''
         && exists(/databases/$(database)/documents/allowedUsers/$(requestEmail()))
-        && get(/databases/$(database)/documents/allowedUsers/$(requestEmail())).data.approved == true;
+        && get(/databases/$(database)/documents/allowedUsers/$(requestEmail())).data.approved == true
+      );
     }
 
     function isBootstrapApprovedEmail() {
-      return requestEmail() == 'jedidjacto@gmail.com'
-        || requestEmail() == 'stancydesigns@gmail.com'
+      return requestEmail() == 'stancydesigns@gmail.com'
         || requestEmail() == 'mekerekaura.com@gmail.com';
+    }
+
+    function isNonEmptyString(value, maxLength) {
+      return value is string && value.size() > 0 && value.size() <= maxLength;
+    }
+
+    function isOptionalString(value, maxLength) {
+      return value == null || (value is string && value.size() <= maxLength);
+    }
+
+    function isNumber(value) {
+      return value is int || value is float;
+    }
+
+    function isNumberBetween(value, min, max) {
+      return isNumber(value) && value >= min && value <= max;
+    }
+
+    function isValidUserProfile() {
+      return request.resource.data.keys().hasOnly([
+          'userId',
+          'fullName',
+          'role',
+          'industry',
+          'financeTrackingMethod',
+          'updatedAt',
+          'createdAt'
+        ])
+        && request.resource.data.keys().hasAll([
+          'userId',
+          'fullName',
+          'role',
+          'industry',
+          'financeTrackingMethod',
+          'updatedAt',
+          'createdAt'
+        ])
+        && request.resource.data.userId == request.auth.uid
+        && isNonEmptyString(request.resource.data.fullName, 100)
+        && isNonEmptyString(request.resource.data.role, 50)
+        && isNonEmptyString(request.resource.data.industry, 50)
+        && isNonEmptyString(request.resource.data.financeTrackingMethod, 100);
+    }
+
+    function isValidScenarioConfig() {
+      return request.resource.data.config is map
+        && request.resource.data.config.keys().hasOnly(['projectionMonths', 'taxRate'])
+        && request.resource.data.config.keys().hasAll(['projectionMonths', 'taxRate'])
+        && request.resource.data.config.projectionMonths in [3, 6, 12, 24]
+        && isNumberBetween(request.resource.data.config.taxRate, 0, 1);
+    }
+
+    function isValidScenarioInput() {
+      return request.resource.data.input is map
+        && request.resource.data.input.keys().hasOnly(['business', 'products', 'expenses', 'scenario'])
+        && request.resource.data.input.keys().hasAll(['business', 'products', 'expenses', 'scenario'])
+        && request.resource.data.input.business is map
+        && request.resource.data.input.business.keys().hasOnly(['id', 'name', 'industry', 'currency', 'createdAt'])
+        && request.resource.data.input.business.keys().hasAll(['id', 'name', 'industry', 'currency', 'createdAt'])
+        && isNonEmptyString(request.resource.data.input.business.id, 80)
+        && isNonEmptyString(request.resource.data.input.business.name, 100)
+        && isNonEmptyString(request.resource.data.input.business.industry, 50)
+        && request.resource.data.input.business.currency == 'NAD'
+        && request.resource.data.input.products is list
+        && request.resource.data.input.products.size() > 0
+        && request.resource.data.input.products.size() <= 25
+        && request.resource.data.input.expenses is list
+        && request.resource.data.input.expenses.size() > 0
+        && request.resource.data.input.expenses.size() <= 25
+        && request.resource.data.input.scenario is map
+        && request.resource.data.input.scenario.keys().hasOnly([
+          'id',
+          'businessId',
+          'name',
+          'priceChangePercent',
+          'costChangePercent',
+          'demandChangePercent',
+          'expenseChangePercent',
+          'createdAt'
+        ])
+        && request.resource.data.input.scenario.keys().hasAll([
+          'id',
+          'businessId',
+          'name',
+          'priceChangePercent',
+          'costChangePercent',
+          'demandChangePercent',
+          'expenseChangePercent',
+          'createdAt'
+        ])
+        && isNonEmptyString(request.resource.data.input.scenario.id, 80)
+        && request.resource.data.input.scenario.businessId == request.resource.data.input.business.id
+        && isNonEmptyString(request.resource.data.input.scenario.name, 80)
+        && isNumberBetween(request.resource.data.input.scenario.priceChangePercent, -100, 100)
+        && isNumberBetween(request.resource.data.input.scenario.costChangePercent, -100, 100)
+        && isNumberBetween(request.resource.data.input.scenario.demandChangePercent, -100, 100)
+        && isNumberBetween(request.resource.data.input.scenario.expenseChangePercent, -100, 100);
+    }
+
+    function isValidScenarioDocument() {
+      return request.resource.data.keys().hasOnly([
+          'userId',
+          'businessName',
+          'scenarioName',
+          'input',
+          'config',
+          'createdAt'
+        ])
+        && request.resource.data.keys().hasAll([
+          'userId',
+          'businessName',
+          'scenarioName',
+          'input',
+          'config',
+          'createdAt'
+        ])
+        && request.resource.data.userId == request.auth.uid
+        && isNonEmptyString(request.resource.data.businessName, 100)
+        && isNonEmptyString(request.resource.data.scenarioName, 80)
+        && isValidScenarioConfig()
+        && isValidScenarioInput();
     }
 
     match /allowedUsers/{emailId} {
@@ -29,28 +156,44 @@ service cloud.firestore {
         && emailId == requestEmail();
 
       allow create: if requestEmail() != ''
-        && emailId == requestEmail()
-        && isBootstrapApprovedEmail()
-        && request.resource.data.email == requestEmail()
-        && request.resource.data.approved == true;
+        && (
+          (
+            emailId == requestEmail()
+            && isBootstrapApprovedEmail()
+          )
+          || isAdminEmail()
+        )
+        && request.resource.data.keys().hasOnly(['email', 'approved', 'createdAt', 'updatedAt', 'notes'])
+        && request.resource.data.email == emailId
+        && request.resource.data.approved == true
+        && isOptionalString(request.resource.data.notes, 200);
 
-      allow update, delete: if false;
+      allow update, delete: if isAdminEmail();
     }
 
     match /userProfiles/{userId} {
-      allow create, read, update, delete: if isSignedIn()
+      allow create, update: if isSignedIn()
+        && isApprovedUser()
+        && request.auth.uid == userId
+        && isValidUserProfile();
+
+      allow read: if isSignedIn()
         && isApprovedUser()
         && request.auth.uid == userId;
+
+      allow delete: if false;
     }
 
     match /scenarios/{scenarioId} {
       allow create: if isSignedIn()
         && isApprovedUser()
-        && request.resource.data.userId == request.auth.uid;
+        && isValidScenarioDocument();
 
-      allow read, update, delete: if isSignedIn()
+      allow read: if isSignedIn()
         && isApprovedUser()
         && resource.data.userId == request.auth.uid;
+
+      allow update, delete: if false;
     }
   }
 }

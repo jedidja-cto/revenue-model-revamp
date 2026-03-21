@@ -4,6 +4,10 @@ import {
   isSupported as analyticsSupported,
 } from 'https://www.gstatic.com/firebasejs/11.5.0/firebase-analytics.js';
 import {
+  initializeAppCheck,
+  ReCaptchaV3Provider,
+} from 'https://www.gstatic.com/firebasejs/11.5.0/firebase-app-check.js';
+import {
   browserLocalPersistence,
   createUserWithEmailAndPassword,
   EmailAuthProvider,
@@ -56,6 +60,7 @@ export const auth = getAuth(app);
 export const db = getFirestore(app);
 export const googleProvider = new GoogleAuthProvider();
 let phoneConfirmationResult = null;
+const appCheckSiteKey = window.APP_UI_CONFIG?.appCheckSiteKey?.trim();
 
 export const analytics = await (async () => {
   if (!window.FIREBASE_CONFIG.measurementId) {
@@ -68,6 +73,19 @@ export const analytics = await (async () => {
 
   return getAnalytics(app);
 })();
+
+export const appCheck = appCheckSiteKey
+  ? initializeAppCheck(app, {
+      provider: new ReCaptchaV3Provider(appCheckSiteKey),
+      isTokenAutoRefreshEnabled: true,
+    })
+  : null;
+
+if (!appCheckSiteKey) {
+  console.warn(
+    'App Check is not active yet. Add APP_UI_CONFIG.appCheckSiteKey in hosting/firebase-config.js after creating a reCAPTCHA v3 site key in Firebase console.',
+  );
+}
 
 await setPersistence(auth, browserLocalPersistence);
 

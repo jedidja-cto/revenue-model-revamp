@@ -31,6 +31,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added a private-beta approval gate so only invited email addresses can access the signed-in app
 - Migrated private-beta access approval into Firestore-backed `allowedUsers` records instead of a frontend config list
 - Tightened Firestore rules so only approved users can read and write scenarios and user profiles
+- Added optional App Check configuration support for the Spark-hosted web app
+- Added Hosting security headers to reduce browser-side attack surface
+- Stopped storing browser-submitted simulation results for new scenario saves and now recompute them locally from saved input and config
+- Added client-side save cooldowns, daily save caps, and tighter field/value limits for scenario inputs
 
 ### Fixed
 
@@ -38,6 +42,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed Firebase phone authentication flow so the SMS confirmation result is preserved between code send and verification
 - Fixed the local/browser build flow for the hosted simulation-engine bundle
 - Removed unused anonymous-auth and guest-link code from the hosted MVP
+- Hardened Firestore validation for user profiles and saved scenarios with stricter schema checks and bounded values
 
 ## [0.1.0] - 2026-03-15
 

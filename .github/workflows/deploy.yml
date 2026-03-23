@@ -1,0 +1,59 @@
+name: Deploy Firebase
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'hosting/**'
+      - 'packages/simulation-engine/**'
+      - 'packages/data-models/**'
+      - 'firebase.json'
+      - 'firestore.rules'
+      - 'scripts/build-browser-engine.mjs'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - '.github/workflows/deploy.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: firebase-production-deploy
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  validate-and-deploy:
+    runs-on: ubuntu-latest
+    environment: production
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Build
+        run: pnpm build
+
+      - name: Deploy Hosting and Firestore
+        run: npx firebase-tools deploy --only hosting,firestore --project revenue-model-revamp --token "${{ secrets.FIREBASE_CI_TOKEN }}"

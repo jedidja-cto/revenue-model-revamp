@@ -118,6 +118,37 @@ revenue-model-revamp/
 
 ## Firebase Setup
 
+## GitHub Deploy Automation
+
+The repo now includes a production deploy workflow at `.github/workflows/deploy.yml`.
+
+What it does:
+
+- runs on push to `master`
+- only triggers when app or Firebase deploy files change
+- installs dependencies
+- runs lint, typecheck, and build
+- deploys Firebase Hosting and Firestore rules only after validation passes
+
+Before it can deploy from GitHub, add this repository secret:
+
+- `FIREBASE_CI_TOKEN`
+
+Recommended setup:
+
+1. Generate a Firebase CI token locally with `firebase login:ci`
+2. Add it in GitHub at:
+   - `Settings -> Secrets and variables -> Actions`
+3. Create a `production` environment in GitHub for this repo
+4. Store the secret there if you want tighter control over production deploys
+
+Why this is safer:
+
+- deploy credentials stay out of the codebase
+- production deploys only happen from GitHub after checks pass
+- deploys are limited to relevant file changes
+- overlapping deploys are cancelled automatically
+
 1. Select the project:
    - `firebase use revenue-model-revamp`
 2. Make sure these Firebase products are enabled:

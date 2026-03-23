@@ -35,6 +35,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added Hosting security headers to reduce browser-side attack surface
 - Stopped storing browser-submitted simulation results for new scenario saves and now recompute them locally from saved input and config
 - Added client-side save cooldowns, daily save caps, and tighter field/value limits for scenario inputs
+- Added a production GitHub Actions deploy workflow for validated Firebase Hosting and Firestore releases on `master`
 
 ### Fixed
 

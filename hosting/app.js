@@ -248,7 +248,6 @@ async function ensureApprovedUserAccess(user = auth.currentUser) {
     await setDoc(accessRef, {
       email: normalizedEmail,
       approved: true,
-      source: 'bootstrap-migration',
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
     });
@@ -1675,7 +1674,7 @@ observeAuthState(async (user) => {
     accessPendingShell.classList.remove('hidden');
     const normalizedEmail = getNormalizedUserEmail(user);
     const pendingMessage = normalizedEmail
-      ? `Signed in as ${normalizedEmail}. This account is waiting for private beta approval in the Firestore access list.`
+      ? `Signed in as ${normalizedEmail}. This account is waiting for private beta approval in the access list.`
       : 'This private beta currently supports approved email accounts only.';
     setFeedback(authStatus, 'Access pending', 'neutral');
     setFeedback(accessPendingFeedback, pendingMessage, 'neutral');

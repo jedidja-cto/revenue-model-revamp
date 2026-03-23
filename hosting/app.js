@@ -74,6 +74,8 @@ const LIMITS = {
   maxDailySaves: 25,
 };
 
+const ADMIN_EMAILS = ['jedidjacto@gmail.com'];
+
 const authScreen = document.querySelector('#auth-screen');
 const appShell = document.querySelector('#app-shell');
 const topbarHomeButton = document.querySelector('#topbar-home-button');
@@ -239,6 +241,23 @@ async function ensureApprovedUserAccess(user = auth.currentUser) {
 
   const accessRef = doc(db, 'allowedUsers', normalizedEmail);
   let snapshot = await getDoc(accessRef);
+
+  if (ADMIN_EMAILS.includes(normalizedEmail)) {
+    if (!snapshot.exists()) {
+      try {
+        await setDoc(accessRef, {
+          email: normalizedEmail,
+          approved: true,
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp(),
+        });
+      } catch (error) {
+        console.warn('Unable to seed the admin access record automatically.', error);
+      }
+    }
+
+    return true;
+  }
 
   if (snapshot.exists()) {
     return snapshot.data()?.approved === true;

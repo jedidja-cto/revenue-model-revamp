@@ -27,7 +27,8 @@ service cloud.firestore {
 
     function isBootstrapApprovedEmail() {
       return requestEmail() == 'stancydesigns@gmail.com'
-        || requestEmail() == 'mekerekaura.com@gmail.com';
+        || requestEmail() == 'mekerekaura.com@gmail.com'
+        || requestEmail() == 'elricodoring@gmail.com';
     }
 
     function isNonEmptyString(value, maxLength) {

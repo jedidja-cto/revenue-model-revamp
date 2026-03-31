@@ -13,7 +13,7 @@ on:
       - 'scripts/build-browser-engine.mjs'
       - 'package.json'
       - 'pnpm-lock.yaml'
-      - '.github/workflows/deploy.yml'
+      - '.github/workflows/deploy.yaml'
   workflow_dispatch:
 
 concurrency:
@@ -29,6 +29,7 @@ jobs:
     environment: production
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+      FIREBASE_CI_TOKEN: ${{ secrets.FIREBASE_CI_TOKEN }}
 
     steps:
       - name: Checkout repository
@@ -55,5 +56,12 @@ jobs:
       - name: Build
         run: pnpm build
 
+      - name: Verify Firebase deploy token
+        run: |
+          if [ -z "$FIREBASE_CI_TOKEN" ]; then
+            echo "FIREBASE_CI_TOKEN is not configured. Add it in GitHub Secrets or the production environment secrets."
+            exit 1
+          fi
+
       - name: Deploy Hosting and Firestore
-        run: npx firebase-tools deploy --only hosting,firestore --project revenue-model-revamp --token "${{ secrets.FIREBASE_CI_TOKEN }}"
+        run: npx firebase-tools deploy --only hosting,firestore --project revenue-model-revamp --token "$FIREBASE_CI_TOKEN"
